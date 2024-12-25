@@ -2,7 +2,6 @@ import MarketKit
 
 enum StatPage: String {
     case aboutApp = "about_app"
-    case academy
     case accountExtendedPrivateKey = "account_extended_private_key"
     case accountExtendedPublicKey = "account_extended_public_key"
     case addToken = "add_token"
@@ -50,6 +49,7 @@ enum StatPage: String {
     case donate
     case donateAddressList = "donate_address_list"
     case doubleSpend = "double_spend"
+    case education
     case evmAddress = "evm_address"
     case evmPrivateKey = "evm_private_key"
     case exportFull = "export_full"
@@ -126,7 +126,6 @@ enum StatPage: String {
     case transactions
     case unlinkWallet = "unlink_wallet"
     case walletConnect = "wallet_connect"
-    case walletConnectPairings = "wallet_connect_pairings"
     case walletConnectRequest = "wallet_connect_request"
     case walletConnectSession = "wallet_connect_session"
     case watchlist

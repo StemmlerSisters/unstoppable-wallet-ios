@@ -452,8 +452,10 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 
 "send.confirmation.title" = "Confirmer";
 "send.confirmation.you_send" = "Vous envoyez";
+"send.confirmation.you_receive" = "You Receive";
 "send.confirmation.transfer" = "Transfert";
 "send.confirmation.to" = "À";
+"send.confirmation.from" = "From";
 "send.confirmation.own" = "Propriétaire";
 "send.confirmation.contact_name" = "Nom du contact";
 "send.confirmation.domain" = "Domaine";
@@ -467,6 +469,10 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "send.confirmation.replace_by_fee" = "Remplacer par frais";
 "send.confirmation.replaced_transactions" = "Transactions remplacées";
 "send.confirmation.input" = "Entrées";
+"send.confirmation.comment" = "Comment";
+"send.confirmation.action" = "Action";
+"send.confirmation.status" = "Statut";
+"send.confirmation.status.failed" = "Failed";
 
 "send.confirmation.sync_failed" = "Échec de synchronisation";
 "send.confirmation.invalid_data" = "Données invalides";
@@ -702,9 +708,8 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 
 "market.global.market_cap" = "Cap Totale";
 "market.global.volume" = "Vol. 24h";
-"market.global.btc_dominance" = "Dominance du BTC";
-"market.global.etf_inflow" = "Entrées d'ETF";
-"market.global.tvl_in_defi" = "TVL en DeFi";
+"market.global.tvl" = "TVL";
+"market.global.etf" = "ETF";
 
 "market.tab.news" = "Infos";
 "market.tab.coins" = "Pièces";
@@ -1007,6 +1012,7 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "coin_analytics.indicators.disclaimer" = "N'oubliez pas d'appliquer une gestion des risques, et notez que ceci n'est pas un conseil financier.";
 "coin_analytics.indicators.info.title" = "Indicateurs techniques";
 "coin_analytics.indicators.info.description" = "Nous utilisons la stratégie des Bandes de Bollinger + RSI pour déterminer les signaux de trading. Toutes les calculs sont basés sur des chandeliers quotidiens et fournissent des conseils pour un terme modérément long. L'essence de la stratégie est que le prix de l'actif doit atteindre un niveau extrême, en sortant du canal des Bandes de Bollinger, et le RSI doit être dans la zone de surachat/survente. Après que le prix revienne dans le canal, il y a une forte probabilité que le prix revienne vers les valeurs moyennes ou tente de casser le canal de l'autre côté. Notez que la stratégie peut donner plusieurs faux signaux lors de mouvements de marché forts avant qu'un signal correct n'apparaisse.\n\nVeuillez vous rappeler qu'il est très important d'appliquer une gestion des risques au trading et de couper les pertes si la situation du marché change!";
+"coin_analytics.indicators.details" = "Détailles";
 "coin_analytics.indicators.hide_details" = "Masquer les détails";
 "coin_analytics.indicators.show_details" = "Afficher les détails";
 "coin_analytics.indicators.summary" = "Résumé";
@@ -1215,7 +1221,7 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "transactions.pending" = "En attente";
 "transactions.processing" = "Traitement en cours";
 "transactions.completed" = "Terminé";
-"transactions.failed" = "Échec";
+"transactions.failed" = "Failed";
 
 "transactions.receive" = "Recevoir";
 "transactions.send" = "Envoyée";
@@ -1226,6 +1232,7 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "transactions.contract_call" = "Appel de contrat";
 "transactions.contract_creation" = "Création du contrat";
 "transactions.external_call" = "Appel externe";
+"transactions.contract_deploy" = "Déploiement du contrat";
 
 "transactions.to" = "A %@";
 "transactions.from" = "De %@";
@@ -1246,6 +1253,9 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "transactions.unknown_transaction.title" = "Transaction inconnue";
 "transactions.unknown_transaction.description" = "La transaction ne peut pas être analysée";
 
+"transactions.ton_transaction.title" = "Ton Transaction";
+"transactions.contract" = "Contract";
+
 // Transaction Info
 
 "tx_info.title" = "Informations sur la transaction";
@@ -1253,8 +1263,8 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "tx_info.title_approval" = "Validation du remplacement";
 "tx_info.status.pending" = "En attente";
 "tx_info.status.completed" = "Terminé";
-"tx_info.status.failed" = "Échec";
-"tx_info.from_hash" = "De";
+"tx_info.status.failed" = "Failed";
+"tx_info.from_hash" = "From";
 "tx_info.transaction_id" = "ID de transaction";
 "tx_info.to_hash" = "À";
 "tx_info.spender" = "Dépendant";
@@ -1304,6 +1314,7 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "settings.contact_us" = "Contactez-nous";
 "settings.social_networks.label" = "Soyez Unstoppable";
 "settings.social_networks.footer" = "Apprenez et maîtrisez les crypto-monnaies grâce à des vidéos exclusives. Faites connaissance avec nous de manière informelle. Soyez les premiers à voir les projets sur lesquels nous travaillons.";
+"settings.get_your_tokens" = "Get UWT Tokens";
 
 // Settings -> Base Currency
 
@@ -1658,6 +1669,7 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "chart.about.read_less" = "Moins d’infos";
 
 "coin_page.return_of_investments" = "ROI";
+"coin_page.return_of_investments.vs" = "contre %@";
 
 // Create Wallet
 
@@ -1708,10 +1720,9 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "intro.stay_private.title" = "Maintenez la confidentialité";
 "intro.stay_private.description" = "Ne divulguez pas vos données privées et financières au monde entier";
 
-// Guides
+// Education
 
-"guides.tab_bar_item" = "Académie";
-"guides.title" = "Académie";
+"education.title" = "Education";
 
 // Add Token
 
@@ -1720,10 +1731,13 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "add_token.already_added" = "Ce token figure déjà sur la liste du gestionnaire des pièces";
 "add_token.invalid_contract_address" = "Adresse du contrat invalide";
 "add_token.invalid_bep2_symbol" = "Invalid BEP2 symbol";
+"add_token.invalid_ton_address" = "Adresse [Ton] non valide";
 "add_token.contract_address_not_found" = "Adresse du contrat introuvable dans la blockchain %@";
+"add_token.jetton_master_not_found" = "Jetton Master n'a pas été trouvé dans la blockchain %@";
 "add_token.bep2_symbol_not_found" = "Symbole BEP2 introuvable";
 "add_token.input_placeholder.contract_address" = "Adresse du contrat";
 "add_token.input_placeholder.bep2_symbol" = "Symbole BEP2";
+"add_token.input_placeholder.jetton_master_address" = "Adresse du Jetton Master";
 "add_token.coin_name" = "Nom de la pièce";
 "add_token.symbol" = "Symbole";
 "add_token.decimals" = "Decimales";
@@ -1763,8 +1777,6 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "wallet_connect_list.title" = "WalletConnect";
 "wallet_connect.list.empty_view_text" = "Aucune session active";
 
-"wallet_connect.list.pairings" = "Pairings";
-"wallet_connect.list.version_text" = "Version %@";
 "wallet_connect.list.v1_bottom_text" = "Dans la première version de WalletConnect, vous devez vous rendre dans les sessions pour voir et confirmer la demande.";
 "wallet_connect_list.new_connection" = "Nouvelle connexion";
 "wallet_connect_list.disconnecting" = "Déconnexion";
@@ -1780,6 +1792,20 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "wallet_connect.paired_dapps.cant_disconnect" = "Impossible de se déconnecter";
 "wallet_connect.paired_dapps.disconnect_all" = "Tout Supprimer";
 "wallet_connect.pending_requests.nonactive_footer" = "Pour ouvrir une demande, vous devez activer le portefeuille désiré";
+
+// Ton Connect
+
+"ton_connect.list.new_connection" = "Nouvelle connexion";
+"ton_connect.list.no_connected_apps" = "No Connected Apps";
+"ton_connect.list.disconnect_app" = "Disconnect App";
+"ton_connect.list.disconnect_app.description" = "Are you sure you want to disconnect from \"%@\"?";
+"ton_connect.list.disconnect_app.disconnect" = "Déconnecter";
+"ton_connect.connect.url" = "URL";
+"ton_connect.connect.wallet" = "Wallet";
+"ton_connect.connect.no_eligible_wallets" = "No eligible wallets";
+"ton_connect.connect.warning" = "En cliquant sur accepter, vous autorisez cette application à afficher votre adresse publique. Il s'agit d'une étape importante de sécurité pour protéger vos données contre les risques potentiels d'hameçonnage.";
+"ton_connect.connect.connect" = "Connecter";
+"ton_connect.connect.reject" = "Rejeter";
 
 // App Status
 
@@ -1802,7 +1828,7 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 "status_info.processing.content" = "La transaction a déjà été incluse dans la blockchain mais n'a pas été finalisée. En ce qui concerne les petits paiements, il est prudent de considérer que la transaction est terminée. Pour les paiements plus importants, il est recommandé d'attendre que le statut de la transaction passe à terminé.";
 "status_info.completed.title" = "Terminé";
 "status_info.confirmed.content" = "La transaction est terminée et considérée comme permanente et irréversible.";
-"status_info.failed.title" = "Échec";
+"status_info.failed.title" = "Failed";
 "status_info.failed.content" = "La transaction n'a pas été traitée et aucun transfert de fonds n'a eu lieu. En fonction de la raison de l'échec, certaines transactions qui ont échoué peuvent entraîner des frais de transaction. Les transactions qui ont été remplacées ou annulées par une autre transaction ne génèrent pas de frais et apparaîtront également comme ayant échoué. L'application %@ n'est pas en mesure d'indiquer la raison de l'échec des transactions, mais les utilisateurs peuvent en trouver eux-mêmes la raison sur un explorateur de blocs public, comme etherscan.io par exemple.";
 
 // Onboarding
@@ -2042,7 +2068,7 @@ Allez dans Paramètres - > %@ et autorisez l'accès à la caméra.";
 // Activate Subscription
 
 "activate_subscription.title" = "Activer";
-"activate_subscription.wallet" = "Portefeuille";
+"activate_subscription.wallet" = "Wallet";
 "activate_subscription.address" = "Adresses";
 "activate_subscription.message" = "Message à signer";
 "activate_subscription.sign" = "Signer";

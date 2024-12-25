@@ -450,8 +450,10 @@
 
 "send.confirmation.title" = "확인";
 "send.confirmation.you_send" = "보냅니다";
+"send.confirmation.you_receive" = "You Receive";
 "send.confirmation.transfer" = "전송";
 "send.confirmation.to" = "에게";
+"send.confirmation.from" = "From";
 "send.confirmation.own" = "아군";
 "send.confirmation.contact_name" = "담당자 이름";
 "send.confirmation.domain" = "도메인";
@@ -465,6 +467,10 @@
 "send.confirmation.replace_by_fee" = "수수료로 대체";
 "send.confirmation.replaced_transactions" = "대체된 거래";
 "send.confirmation.input" = "입력";
+"send.confirmation.comment" = "Comment";
+"send.confirmation.action" = "Action";
+"send.confirmation.status" = "상태";
+"send.confirmation.status.failed" = "Failed";
 
 "send.confirmation.sync_failed" = "동기화 실패";
 "send.confirmation.invalid_data" = "유효하지 않은 데이터";
@@ -700,9 +706,8 @@
 
 "market.global.market_cap" = "시가 총액";
 "market.global.volume" = "24h 거래량";
-"market.global.btc_dominance" = "BTC 지배력";
-"market.global.etf_inflow" = "ETF 유입액";
-"market.global.tvl_in_defi" = "디파이(DeFi)에서의 총 예치 가치";
+"market.global.tvl" = "TVL";
+"market.global.etf" = "ETF";
 
 "market.tab.news" = "뉴스";
 "market.tab.coins" = "코인";
@@ -1006,6 +1011,7 @@
 "coin_analytics.indicators.disclaimer" = "언제나 위험 관리를 적용하는 것을 기억하세요. 이것은 금융 조언이 아님을 유의하세요.";
 "coin_analytics.indicators.info.title" = "기술적 지표";
 "coin_analytics.indicators.info.description" = "우리는 볼린저 밴드 + RSI 전략을 사용하여 거래 신호를 결정합니다. 모든 계산은 일일 양봉을 기반으로 하며, 중장기적인 조언을 제공합니다. 이 전략의 본질은 자산 가격이 극단에 도달하여 볼린저 밴드 채널을 벗어나야 하며, RSI가 과매수/과매도 구간에 있어야 한다는 것입니다. 가격이 채널로 복귀한 후, 가격이 평균값으로 복귀하거나 다른 측면에서 채널을 뚫으려는 높은 확률이 있습니다. 강한 시장 움직임 중에는 올바른 신호가 나타나기 전에 여러 가질 수도 있음을 유의하십시오.\n\n거래에 위험 관리를 적용하는 것이 매우 중요하며, 시장 상황이 변할 경우 손실을 줄이는 것을 기억하세요! ";
+"coin_analytics.indicators.details" = "상세 정보";
 "coin_analytics.indicators.hide_details" = "세부 사항 숨기기";
 "coin_analytics.indicators.show_details" = "세부 정보 보기";
 "coin_analytics.indicators.summary" = "요약";
@@ -1214,7 +1220,7 @@
 "transactions.pending" = "보류 중";
 "transactions.processing" = "처리 중";
 "transactions.completed" = "완료됨";
-"transactions.failed" = "실패";
+"transactions.failed" = "Failed";
 
 "transactions.receive" = "수령";
 "transactions.send" = "전송됨";
@@ -1225,6 +1231,7 @@
 "transactions.contract_call" = "계약 콜";
 "transactions.contract_creation" = "계약 생성";
 "transactions.external_call" = "외부 콜";
+"transactions.contract_deploy" = "계약 배포";
 
 "transactions.to" = "%@에게";
 "transactions.from" = "%@부터";
@@ -1245,6 +1252,9 @@
 "transactions.unknown_transaction.title" = "알 수 없는 트랜잭션";
 "transactions.unknown_transaction.description" = "트랜잭션을 구문 분석할 수 없습니다";
 
+"transactions.ton_transaction.title" = "Ton 거래";
+"transactions.contract" = "계약";
+
 // Transaction Info
 
 "tx_info.title" = "거래 정보";
@@ -1252,8 +1262,8 @@
 "tx_info.title_approval" = "스왑 승인";
 "tx_info.status.pending" = "보류 중";
 "tx_info.status.completed" = "완료됨";
-"tx_info.status.failed" = "실패";
-"tx_info.from_hash" = "로 부터";
+"tx_info.status.failed" = "Failed";
+"tx_info.from_hash" = "From";
 "tx_info.transaction_id" = "거래 ID";
 "tx_info.to_hash" = "에게";
 "tx_info.spender" = "스펜더";
@@ -1303,6 +1313,7 @@
 "settings.contact_us" = "문의하기";
 "settings.social_networks.label" = "Be Unstoppable";
 "settings.social_networks.footer" = "독점 비디오로 암호화폐를 배우고 정복하세요. 비공식적으로 우리를 알아가세요. 우리가 작업하는 것들을 가장 먼저 보실 수 있습니다.";
+"settings.get_your_tokens" = "Get UWT Tokens";
 
 // Settings -> Base Currency
 
@@ -1659,6 +1670,7 @@
 "chart.about.read_less" = "덜 읽기";
 
 "coin_page.return_of_investments" = "ROI";
+"coin_page.return_of_investments.vs" = "대 %@";
 
 // Create Wallet
 
@@ -1709,10 +1721,9 @@
 "intro.stay_private.title" = "개인 정보 유지";
 "intro.stay_private.description" = "개인 및 금융 데이터를 세상에 유출하지 마십시오.";
 
-// Guides
+// Education
 
-"guides.tab_bar_item" = "아카데미";
-"guides.title" = "아카데미";
+"education.title" = "Education";
 
 // Add Token
 
@@ -1721,10 +1732,13 @@
 "add_token.already_added" = "이 토큰은 이미 코인 매니저 리스트에 있습니다.";
 "add_token.invalid_contract_address" = "잘못된 계약 주소";
 "add_token.invalid_bep2_symbol" = "잘못된 BEP2 기호";
+"add_token.invalid_ton_address" = "잘못된 [톤] 주소입니다";
 "add_token.contract_address_not_found" = "%@ 블록체인에서 계약 주소를 찾을 수 없습니다.";
+"add_token.jetton_master_not_found" = "Jetton Master를 %@ 블록체인에서 찾을 수 없습니다";
 "add_token.bep2_symbol_not_found" = "BEP2 기호를 찾을 수 없음";
 "add_token.input_placeholder.contract_address" = "계약 주소";
 "add_token.input_placeholder.bep2_symbol" = "BEP2 심볼";
+"add_token.input_placeholder.jetton_master_address" = "제톤 마스터 주소";
 "add_token.coin_name" = "코인 이름";
 "add_token.symbol" = "기호";
 "add_token.decimals" = "소수점";
@@ -1764,8 +1778,6 @@
 "wallet_connect_list.title" = "WalletConnect";
 "wallet_connect.list.empty_view_text" = "활성 세션 없음";
 
-"wallet_connect.list.pairings" = "동기화";
-"wallet_connect.list.version_text" = "버전 %@";
 "wallet_connect.list.v1_bottom_text" = "WalletConnect의 첫 번째 버전에서는 요청을 보고 확인하기 위해 세션으로 이동해야 합니다.";
 "wallet_connect_list.new_connection" = "새로운 연결";
 "wallet_connect_list.disconnecting" = "연결을 끊는 중...";
@@ -1781,6 +1793,20 @@
 "wallet_connect.paired_dapps.cant_disconnect" = "연결을 끊을 수 없습니다";
 "wallet_connect.paired_dapps.disconnect_all" = "모두 삭제";
 "wallet_connect.pending_requests.nonactive_footer" = "요청을 열려면 원하는 지갑을 활성화해야 합니다";
+
+// Ton Connect
+
+"ton_connect.list.new_connection" = "새로운 연결";
+"ton_connect.list.no_connected_apps" = "No Connected Apps";
+"ton_connect.list.disconnect_app" = "Disconnect App";
+"ton_connect.list.disconnect_app.description" = "Are you sure you want to disconnect from \"%@\"?";
+"ton_connect.list.disconnect_app.disconnect" = "연결 해제";
+"ton_connect.connect.url" = "URL 주소";
+"ton_connect.connect.wallet" = "Wallet";
+"ton_connect.connect.no_eligible_wallets" = "No eligible wallets";
+"ton_connect.connect.warning" = "승인을 눌러 이 앱이 귀하의 공공 주소를 볼 수 있도록 허용하십시오. 이것은 잠재적인 피싱 위험으로부터 데이터를 보호하기 위한 중요한 보안 단계 입니다.";
+"ton_connect.connect.connect" = "연결";
+"ton_connect.connect.reject" = "거절";
 
 // App Status
 
@@ -1803,7 +1829,7 @@
 "status_info.processing.content" = "거래는 이미 블록체인에 포함되었지만 영구적인 완결성에 도달하지 않았습니다. 이 시점에서 소액 결제를 위해 완료된 거래로 간주하는 것이 안전합니다. 더 큰 지불의 경우 거래 상태가 완료로 변경될 때까지 기다리는 것이 좋습니다.";
 "status_info.completed.title" = "완료됨";
 "status_info.confirmed.content" = "거래가 완료되고 영구적이고 되돌릴 수 없는 것으로 간주됩니다.";
-"status_info.failed.title" = "실패";
+"status_info.failed.title" = "Failed";
 "status_info.failed.content" = "거래가 처리되지 않았으며 가치 이전이 발생하지 않았습니다. 실패 원인에 따라 일부 실패한 거래는 거래 수수료를 소모할 수 있습니다. 다른 거래로 대체되거나 취소된 거래는 거래 수수료를 소비하지 않으며 실패한 것으로 표시됩니다. %@ 앱은 거래 실패의 원인을 표시할 수 없지만 사용자는 etherscan.io와 같은 공개 블록 탐색기에서 직접 찾을 수 있습니다.";
 
 // Onboarding
@@ -2043,7 +2069,7 @@
 // Activate Subscription
 
 "activate_subscription.title" = "활성화";
-"activate_subscription.wallet" = "지갑";
+"activate_subscription.wallet" = "Wallet";
 "activate_subscription.address" = "주소";
 "activate_subscription.message" = "서명할 메시지";
 "activate_subscription.sign" = "가입";

@@ -106,20 +106,26 @@ class WalletService {
             sortType = .balance
         }
 
-        subscribe(disposeBag, accountManager.activeAccountObservable) { [weak self] in
-            self?.handleUpdated(activeAccount: $0)
-        }
-        subscribe(disposeBag, accountManager.accountUpdatedObservable) { [weak self] in
-            self?.handleUpdated(account: $0)
-        }
-        subscribe(disposeBag, accountManager.accountDeletedObservable) { [weak self] in
-            self?.handleDeleted(account: $0)
-        }
-        subscribe(disposeBag, accountManager.accountsLostObservable) { [weak self] isAccountsLost in
-            if isAccountsLost {
-                self?.accountsLostRelay.accept(())
+        accountManager.activeAccountPublisher
+            .sink { [weak self] in self?.handleUpdated(activeAccount: $0) }
+            .store(in: &cancellables)
+
+        accountManager.accountUpdatedPublisher
+            .sink { [weak self] in self?.handleUpdated(account: $0) }
+            .store(in: &cancellables)
+
+        accountManager.accountDeletedPublisher
+            .sink { [weak self] in self?.handleDeleted(account: $0) }
+            .store(in: &cancellables)
+
+        accountManager.accountsLostPublisher
+            .sink { [weak self] isAccountsLost in
+                if isAccountsLost {
+                    self?.accountsLostRelay.accept(())
+                }
             }
-        }
+            .store(in: &cancellables)
+
         subscribe(disposeBag, appManager.willEnterForegroundObservable) { [weak self] in
             self?.coinPriceService.refresh()
         }
@@ -256,11 +262,11 @@ class WalletService {
             }
         }
 
-        var convertedValue: CoinValue?
+        var convertedValue: AppValue?
         var convertedValueExpired = false
 
         if let conversionToken = balanceConversionManager.conversionToken, let priceItem = coinPriceService.item(coinUid: conversionToken.coin.uid) {
-            convertedValue = CoinValue(kind: .token(token: conversionToken), value: total / priceItem.price.value)
+            convertedValue = AppValue(token: conversionToken, value: total / priceItem.price.value)
             convertedValueExpired = priceItem.expired
         }
 
@@ -560,7 +566,7 @@ extension WalletService {
     struct TotalItem {
         let currencyValue: CurrencyValue
         let expired: Bool
-        let convertedValue: CoinValue?
+        let convertedValue: AppValue?
         let convertedValueExpired: Bool
     }
 }

@@ -19,6 +19,7 @@ class MainSettingsViewController: ThemeViewController {
 
     private let manageAccountsCell = BaseSelectableThemeCell()
     private let walletConnectCell = BaseSelectableThemeCell()
+    private let tonConnectCell = BaseSelectableThemeCell()
     private let securityCell = BaseSelectableThemeCell()
     private let appearanceCell = BaseSelectableThemeCell()
     private let contactBookCell = BaseSelectableThemeCell()
@@ -69,6 +70,9 @@ class MainSettingsViewController: ThemeViewController {
 
         walletConnectCell.set(backgroundStyle: .lawrence)
         syncWalletConnectCell()
+
+        tonConnectCell.set(backgroundStyle: .lawrence)
+        syncTonConnectCell()
 
         securityCell.set(backgroundStyle: .lawrence, isFirst: true)
         syncSecurityCell()
@@ -170,6 +174,16 @@ class MainSettingsViewController: ThemeViewController {
         )
     }
 
+    private func syncTonConnectCell(text: String? = nil, highlighted: Bool = false) {
+        buildTitleValue(
+            cell: tonConnectCell,
+            image: UIImage(named: "ton_connect_24"),
+            title: "TON Connect",
+            value: !highlighted ? text : nil,
+            badge: highlighted ? text : nil
+        )
+    }
+
     private func syncBaseCurrency(value: String? = nil) {
         buildTitleValue(cell: baseCurrencyCell, image: UIImage(named: "usd_24"), title: "settings.base_currency".localized, value: value)
     }
@@ -211,6 +225,10 @@ class MainSettingsViewController: ThemeViewController {
         stat(page: .settings, event: .open(page: .donate))
     }
 
+    private func onTokenTapped() {
+        UrlManager.open(url: "https://t.me/\(AppConfig.appTokenTelegramAccount)")
+    }
+
     private var accountRows: [RowProtocol] {
         [
             StaticRow(
@@ -244,6 +262,15 @@ class MainSettingsViewController: ThemeViewController {
                     self?.viewModel.onTapWalletConnect()
                 }
             ),
+//             StaticRow(
+//                 cell: tonConnectCell,
+//                 id: "ton-connect",
+//                 height: .heightCell48,
+//                 autoDeselect: true,
+//                 action: { [weak self] in
+//                     self?.onTapTonConnect()
+//                 }
+//             ),
             tableView.universalRow48(
                 id: "backup-manager",
                 image: .local(UIImage(named: "icloud_24")),
@@ -337,15 +364,15 @@ class MainSettingsViewController: ThemeViewController {
                 }
             ),
             tableView.universalRow48(
-                id: "academy",
+                id: "education",
                 image: .local(UIImage(named: "academy_1_24")),
-                title: .body("guides.title".localized),
+                title: .body("education.title".localized),
                 accessoryType: .disclosure,
                 isLast: true,
                 action: { [weak self] in
-                    self?.navigationController?.pushViewController(GuidesModule.instance(), animated: true)
+                    self?.navigationController?.pushViewController(EducationView().toViewController(title: "education.title".localized), animated: true)
 
-                    stat(page: .settings, event: .open(page: .academy))
+                    stat(page: .settings, event: .open(page: .education))
                 }
             ),
         ]
@@ -453,6 +480,23 @@ class MainSettingsViewController: ThemeViewController {
         ]
     }
 
+    private var tokenRows: [RowProtocol] {
+        [
+            tableView.universalRow48(
+                id: "token",
+                image: .local(UIImage(named: "uwt_24")?.withTintColor(.themeJacob)),
+                title: .body("settings.get_your_tokens".localized),
+                accessoryType: .disclosure,
+                autoDeselect: true,
+                isFirst: true,
+                isLast: true,
+                action: { [weak self] in
+                    self?.onTokenTapped()
+                }
+            ),
+        ]
+    }
+
     private var footerRows: [RowProtocol] {
         [
             StaticRow(
@@ -517,12 +561,17 @@ class MainSettingsViewController: ThemeViewController {
 
         stat(page: .settings, event: .open(page: .contactUs))
     }
+
+    private func onTapTonConnect() {
+        navigationController?.pushViewController(TonConnectListView().toViewController(title: "TON Connect"), animated: true)
+    }
 }
 
 extension MainSettingsViewController: SectionsDataSource {
     func buildSections() -> [SectionProtocol] {
         var sections: [SectionProtocol] = [
-            Section(id: "account", headerState: .margin(height: AppConfig.donateEnabled ? .margin32 : .margin12), rows: accountRows),
+            Section(id: "token", headerState: .margin(height: AppConfig.donateEnabled ? .margin32 : .margin12), rows: tokenRows),
+            Section(id: "account", headerState: .margin(height: .margin32), rows: accountRows),
             Section(id: "appearance_settings", headerState: .margin(height: .margin32), footerState: .margin(height: .margin24), rows: appearanceRows),
             Section(
                 id: "social",
