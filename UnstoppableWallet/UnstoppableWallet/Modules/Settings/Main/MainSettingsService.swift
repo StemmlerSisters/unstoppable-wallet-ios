@@ -5,6 +5,7 @@ import ThemeKit
 
 class MainSettingsService {
     private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
 
     private let backupManager: BackupManager
     private let cloudAccountBackupManager: CloudBackupManager
@@ -17,6 +18,7 @@ class MainSettingsService {
     private let currencyManager: CurrencyManager
     private let walletConnectSessionManager: WalletConnectSessionManager
     private let subscriptionManager: SubscriptionManager
+    private let purchaseManager = App.shared.purchaseManager
     private let rateAppManager: RateAppManager
 
     private let iCloudAvailableErrorRelay = BehaviorRelay<Bool>(value: false)
@@ -47,7 +49,10 @@ class MainSettingsService {
         }
 
         subscribe(disposeBag, backupManager.allBackedUpObservable) { [weak self] _ in self?.syncWalletRequiredActions() }
-        subscribe(disposeBag, accountRestoreWarningManager.hasNonStandardObservable) { [weak self] _ in self?.syncWalletRequiredActions() }
+
+        accountRestoreWarningManager.hasNonStandardPublisher
+            .sink { [weak self] _ in self?.syncWalletRequiredActions() }
+            .store(in: &cancellables)
 
         syncWalletRequiredActions()
     }
@@ -128,6 +133,32 @@ extension MainSettingsService {
 
     var isAuthenticated: Bool {
         subscriptionManager.isAuthenticated
+    }
+
+    var hasActiveSubscriptionsPublisher: AnyPublisher<Bool, Never> {
+        purchaseManager
+            .$purchasedProducts
+            .map { [weak purchaseManager] _ in purchaseManager?.hasActivePurchase ?? false }
+            .eraseToAnyPublisher()
+    }
+
+    var hasActiveSubscriptions: Bool {
+        purchaseManager.hasActivePurchase
+    }
+
+    var allowFreeTrialPublisher: AnyPublisher<Bool, Never> {
+        purchaseManager
+            .$purchasedProducts
+            .map(\.isEmpty)
+            .eraseToAnyPublisher()
+    }
+
+    var allowFreeTrial: Bool {
+        purchaseManager.purchasedProducts.isEmpty
+    }
+
+    func activated(_ premiumFeature: PremiumFeature) -> Bool {
+        purchaseManager.activated(premiumFeature)
     }
 
     var walletConnectState: WalletConnectState {

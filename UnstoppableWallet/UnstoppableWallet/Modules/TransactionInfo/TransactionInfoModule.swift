@@ -26,7 +26,7 @@ extension TransactionInfoModule {
 
     enum ViewItem {
         case actionTitle(iconName: String?, iconDimmed: Bool, title: String, subTitle: String?)
-        case amount(title: String, subtitle: String?, iconUrl: String?, iconPlaceholderImageName: String, coinAmount: String, currencyAmount: String?, type: AmountType, coinUid: String?)
+        case amount(title: String, subtitle: String?, iconUrl: String?, iconAlternativeUrl: String?, iconPlaceholderImageName: String, coinAmount: String, currencyAmount: String?, type: AmountType, coin: Coin?)
         case nftAmount(iconUrl: String?, iconPlaceholderImageName: String, nftAmount: String, type: AmountType, providerCollectionUid: String?, nftUid: NftUid?)
         case status(status: TransactionStatus)
         case option(option: Option)
@@ -52,11 +52,17 @@ extension TransactionInfoModule {
 
     struct SectionViewItem {
         let viewItems: [ViewItem]
+        let header: SectionHeaderViewItem?
         let footer: String?
 
-        init(_ viewItems: [ViewItem], footer: String? = nil) {
+        init(_ viewItems: [ViewItem], header: SectionHeaderViewItem? = nil, footer: String? = nil) {
             self.viewItems = viewItems
+            self.header = header
             self.footer = footer
         }
+    }
+
+    enum SectionHeaderViewItem {
+        case premium
     }
 }

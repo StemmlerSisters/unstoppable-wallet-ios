@@ -7,8 +7,9 @@ struct MarketWatchlistView: View {
 
     @State private var sortBySelectorPresented = false
     @State private var timePeriodSelectorPresented = false
-    @State private var presentedFullCoin: FullCoin?
+    @State private var presentedCoin: Coin?
     @State private var signalsPresented = false
+    @State private var subscriptionPresented = false
 
     @State private var editMode: EditMode = .inactive
 
@@ -22,7 +23,7 @@ struct MarketWatchlistView: View {
                 }
             case let .loaded(marketInfos, signals):
                 if marketInfos.isEmpty {
-                    PlaceholderViewNew(image: Image("rate_48"), text: "market.watchlist.empty".localized)
+                    PlaceholderViewNew(image: Image("heart_48"), text: "market.watchlist.empty".localized)
                 } else {
                     VStack(spacing: 0) {
                         header()
@@ -37,9 +38,9 @@ struct MarketWatchlistView: View {
                 }
             }
         }
-        .sheet(item: $presentedFullCoin) { fullCoin in
-            CoinPageViewNew(coinUid: fullCoin.coin.uid).ignoresSafeArea()
-                .onFirstAppear { stat(page: .markets, section: .watchlist, event: .openCoin(coinUid: fullCoin.coin.uid)) }
+        .sheet(item: $presentedCoin) { coin in
+            CoinPageView(coin: coin)
+                .onFirstAppear { stat(page: .markets, section: .watchlist, event: .openCoin(coinUid: coin.uid)) }
         }
     }
 
@@ -78,11 +79,16 @@ struct MarketWatchlistView: View {
 
                 if viewModel.showSignals {
                     signalsButton()
-                        .buttonStyle(SecondaryActiveButtonStyle())
+                        .buttonStyle(SecondaryActiveButtonStyle(leftAccessory:
+                            .custom(icon: "star_premium_20", enabledColor: .themeDark, disabledColor: .themeDark)
+                        ))
                         .disabled(disabled)
                 } else {
                     signalsButton()
-                        .buttonStyle(SecondaryButtonStyle())
+                        .buttonStyle(
+                            SecondaryButtonStyle(leftAccessory:
+                                .custom(image: Image("star_premium_20"), pressedColor: .themeJacob, activeColor: .themeJacob, disabledColor: .themeJacob)
+                            ))
                         .disabled(disabled)
                 }
             }
@@ -114,14 +120,24 @@ struct MarketWatchlistView: View {
             }
         )
         .sheet(isPresented: $signalsPresented) {
-            MarketWatchlistSignalsView(viewModel: viewModel, isPresented: $signalsPresented)
+            MarketWatchlistSignalsView(setShowSignals: { [weak viewModel] in
+                viewModel?.set(showSignals: $0)
+            }, isPresented: $signalsPresented)
+        }
+        .sheet(isPresented: $subscriptionPresented) {
+            PurchasesView()
         }
     }
 
     @ViewBuilder private func signalsButton() -> some View {
         Button(action: {
+            guard viewModel.tradeSignalsEnabled else {
+                subscriptionPresented = true
+                return
+            }
+
             if viewModel.showSignals {
-                viewModel.showSignals = false
+                viewModel.set(showSignals: false)
             } else {
                 signalsPresented = true
             }
@@ -142,7 +158,7 @@ struct MarketWatchlistView: View {
                 let coin = marketInfo.fullCoin.coin
 
                 ClickableRow(action: {
-                    presentedFullCoin = marketInfo.fullCoin
+                    presentedCoin = coin
                 }) {
                     itemContent(
                         coin: coin,
@@ -157,7 +173,7 @@ struct MarketWatchlistView: View {
                     Button(role: .destructive) {
                         viewModel.remove(coinUid: coin.uid)
                     } label: {
-                        Image("star_off_24").renderingMode(.template)
+                        Image("heart_broke_24").renderingMode(.template)
                     }
                     .tint(.themeLucian)
                 }

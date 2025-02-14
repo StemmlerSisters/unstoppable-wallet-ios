@@ -29,6 +29,7 @@
 "button.i_understand" = "I Understand";
 "button.learn_more" = "Learn More";
 "button.unlock" = "Unlock";
+"button.select" = "Select";
 
 "alert" = "Alert";
 "alert.copied" = "Copied";
@@ -103,6 +104,7 @@
 "number.quadrillion" = "%@Q";
 
 "selector.any" = "Any";
+"selector.none" = "None";
 
 "face_id" = "Face ID";
 "touch_id" = "Touch ID";
@@ -409,6 +411,10 @@
 
 "blockchain_type.recommended" = " (recommended)";
 
+// Address
+
+"address.title" = "Enter Address";
+
 // Send
 
 "send.title" = "Send %@";
@@ -450,8 +456,10 @@
 
 "send.confirmation.title" = "Confirm";
 "send.confirmation.you_send" = "You Send";
+"send.confirmation.you_receive" = "You Receive";
 "send.confirmation.transfer" = "Transfer";
 "send.confirmation.to" = "To";
+"send.confirmation.from" = "From";
 "send.confirmation.own" = "Own";
 "send.confirmation.contact_name" = "Contact Name";
 "send.confirmation.domain" = "Domain";
@@ -465,6 +473,10 @@
 "send.confirmation.replace_by_fee" = "Replace by Fee";
 "send.confirmation.replaced_transactions" = "Replaced Transactions";
 "send.confirmation.input" = "Input";
+"send.confirmation.comment" = "Comment";
+"send.confirmation.action" = "Action";
+"send.confirmation.status" = "Status";
+"send.confirmation.status.failed" = "Failed";
 
 "send.confirmation.sync_failed" = "Sync Failed";
 "send.confirmation.invalid_data" = "Invalid Data";
@@ -519,12 +531,38 @@
 "approve.confirmation.spender" = "Spender";
 
 "send.enter_amount" = "Enter Amount";
-"send.enter_address" = "Enter Address";
-"send.invalid_address" = "Invalid Address";
 "send.token_not_enabled" = "Token Not Enabled";
 "send.token_syncing" = "Token Syncing";
 "send.token_not_synced" = "Token Not Synced";
 "send.insufficient_balance" = "Insufficient Balance";
+"send.send_anyway" = "Send Anyway";
+
+"send.address.enter_address" = "Enter Address";
+"send.address.invalid_address" = "Invalid Address";
+"send.address.recent" = "Recent";
+"send.address.contacts" = "Contacts";
+"send.address.checking" = "Checking";
+"send.address.check.clear" = "Clear";
+"send.address.check.detected" = "Detected";
+"send.address.phishing_check" = "Phishing Check";
+"send.address.phishing.clear.title" = "Phishing: Clear";
+"send.address.phishing.clear.description" = "The verification is based on your transaction history, and no suspicious activity has been detected. The entered address has not been involved in known spam transactions associated with phishing attempts.";
+"send.address.phishing.caution.title" = "Phishing Address Detected!";
+"send.address.phishing.caution.description" = "The address you entered may be fraudulent. Scammers often alter the first and last characters. Verify the full address carefully before proceeding to avoid loss.";
+"send.address.phishing.pre_send.title" = "Phishing Address!";
+"send.address.phishing.pre_send.description" = "You are about to send funds to a suspicious address that may be fraudulent. Please be aware that this could result in a permanent loss of your tokens. By proceeding, you acknowledge the risks involved. Are you sure you want to continue?";
+"send.address.sanction_check" = "Sanction Check";
+"send.address.sanction.caution.title" = "Sanctioned Address!";
+"send.address.sanction.caution.description" = "The address you entered is flagged as sanctioned. Transactions to this address could lead to loss or other risks. Please verify the recipient's details before proceeding.";
+"send.address.sanction.pre_send.title" = "Sanctioned Address Detected!";
+"send.address.sanction.pre_send.description" = "You are about to send funds to an address that is sanctioned. Transactions to this address could result in loss or other risks. By proceeding, you acknowledge the potential dangers. Are you sure you want to continue?";
+"send.address.blacklist_check" = "Blacklist Check";
+"send.address.blacklist.clear.title" = "Blacklist: Clear";
+"send.address.blacklist.clear.description" = "The recipient address has passed verification through Chainalysis.com and has not been flagged. This means the address has not been detected in any known blacklists or associated with suspicious activity.";
+"send.address.blacklist.caution.title" = "Blacklisted Address!";
+"send.address.blacklist.caution.description" = "The address you entered is flagged as blacklisted. Transactions to this address could lead to loss or other risks. Please verify the recipient's details before proceeding.";
+"send.address.blacklist.pre_send.title" = "Blacklisted Address Detected!";
+"send.address.blacklist.pre_send.description" = "You are about to send funds to an address that is blacklisted. Transactions to this address could result in loss or other risks. By proceeding, you acknowledge the potential dangers. Are you sure you want to continue?";
 
 // Donate
 
@@ -624,6 +662,8 @@
 "swap.advanced_settings.recipient.footer" = "After the exchange operation, the amount will be transferred to the specified address";
 "swap.advanced_settings.deadline_minute" = "%@ min";
 "swap.advanced_settings.recipient_address" = "Recipient Address";
+"swap.advanced_settings.recipient_address.to" = "To";
+"swap.advanced_settings.add_recipient_address" = "Add Recipient Address";
 "swap.advanced_settings.warning.unusual_slippage" = "Your transaction may be frontrun";
 "swap.advanced_settings.service_fee_description" = "A service fee for the swap action on the platform typicaly either 0.3% or 0.6%";
 "swap.advanced_settings.error.lower_slippage" = "Your transaction is likely to fail.";
@@ -700,9 +740,8 @@
 
 "market.global.market_cap" = "Total Cap";
 "market.global.volume" = "24h Vol.";
-"market.global.btc_dominance" = "BTC Dominance";
-"market.global.etf_inflow" = "ETF Inflow";
-"market.global.tvl_in_defi" = "TVL in DeFi";
+"market.global.tvl" = "TVL";
+"market.global.etf" = "ETF";
 
 "market.tab.news" = "News";
 "market.tab.coins" = "Coins";
@@ -827,6 +866,7 @@
 "market.advanced_search.choose_set" = "Choose Set";
 "market.advanced_search.market_cap" = "Market Cap";
 "market.advanced_search.volume" = "Trading Volume (24h)";
+"market.advanced_search.categories" = "Sectors";
 
 "market.advanced_search.listed_on_top_exchanges" = "Listed on Top Exchanges";
 "market.advanced_search.good_cex_volume" = "Good CEX Volume";
@@ -843,8 +883,9 @@
 "market.advanced_search.outperformed_btc" = "Outperformed BTC";
 "market.advanced_search.outperformed_eth" = "Outperformed ETH";
 "market.advanced_search.outperformed_bnb" = "Outperformed BNB";
-"market.advanced_search.price_close_to_ath" = "Price Close To ATH";
-"market.advanced_search.price_close_to_atl" = "Price Close To ATL";
+"market.advanced_search.price_close_to" = "Price Close To";
+"market.advanced_search.price_close_to_ath" = "ATH(All Time High)";
+"market.advanced_search.price_close_to_atl" = "ATL(All Time Low)";
 
 "market.advanced_search.top" = "Top %d";
 "market.advanced_search.reset_all" = "Reset";
@@ -872,6 +913,16 @@
 "market.advanced_search.more_10_b" = "> 10B";
 "market.advanced_search.more_50_b" = "> 50B";
 "market.advanced_search.more_500_b" = "> 500B";
+
+"market.advanced_search.top.m_cap" = "M.Cap";
+"market.advanced_search.top.more_1_b" = "> $1B";
+"market.advanced_search.top.more_500_m" = "> $500M";
+"market.advanced_search.top.more_250_m" = "> $250M";
+"market.advanced_search.top.more_100_m" = "> $100M";
+"market.advanced_search.top.more_25_m" = "> $25M";
+"market.advanced_search.top.more_10_m" = "> $10M";
+"market.advanced_search.top.more_5_m" = "> $5M";
+"market.advanced_search.top.more_1_m" = "> $1M";
 
 "market.advanced_search.day" = "1 Day";
 "market.advanced_search.week" = "1 Week";
@@ -1005,6 +1056,7 @@
 "coin_analytics.indicators.disclaimer" = "Always remember to apply risk management, and note that this is not financial advice.";
 "coin_analytics.indicators.info.title" = "Technical Indicators";
 "coin_analytics.indicators.info.description" = "We use the Bollinger Bands + RSI strategy to determine trading signals. All calculations are based on daily candlesticks and provide advice for a moderately long term. The essence of the strategy is that the asset price should reach an extreme, breaking out of the Bollinger Bands channel, and the RSI should be in the overbought/oversold zone. After the price returns to the channel, there is a high probability of the price returning to the mean values or attempting to break the channel from the other side. Note that the strategy may give several false signals during strong market movements before a correct signal appears.\n\nPlease remember that it is very important to apply risk management to trading and remember to cut losses if the market situation changes! ";
+"coin_analytics.indicators.details" = "Details";
 "coin_analytics.indicators.hide_details" = "Hide Details";
 "coin_analytics.indicators.show_details" = "Show Details";
 "coin_analytics.indicators.summary" = "Summary";
@@ -1224,6 +1276,7 @@
 "transactions.contract_call" = "Contract Call";
 "transactions.contract_creation" = "Contract Creation";
 "transactions.external_call" = "External Call";
+"transactions.contract_deploy" = "Contract Deploy";
 
 "transactions.to" = "To %@";
 "transactions.from" = "From %@";
@@ -1243,6 +1296,9 @@
 
 "transactions.unknown_transaction.title" = "Unknown Transaction";
 "transactions.unknown_transaction.description" = "Transaction can not be parsed";
+
+"transactions.ton_transaction.title" = "Ton Transaction";
+"transactions.contract" = "Contract";
 
 // Transaction Info
 
@@ -1300,8 +1356,8 @@
 "settings.rate_us" = "Rate Us";
 "settings.tell_friends" = "Tell Friends";
 "settings.contact_us" = "Contact Us";
-"settings.social_networks.label" = "Be Unstoppable";
-"settings.social_networks.footer" = "Learn and master crypto via exclusive videos. Get to know us informally. Be the first to see things we work on.";
+"settings.social_networks.label" = "Join Unstoppables";
+"settings.get_your_tokens" = "Get your tokens";
 
 // Settings -> Base Currency
 
@@ -1531,11 +1587,9 @@
 // Settings -> Privacy
 
 "settings.privacy" = "Privacy";
-"settings.privacy.description" = "%@ doesn't collect personal data that expose your private information i.e. coin balances or addresses. While we gather some UI usage statistics, it's solely for understanding our user base and app usage trends. That can be disabled if you wish.";
-"settings.privacy.statement.data_usage" = "The wallet doesn't collect any data about users.";
-"settings.privacy.statement.data_storage" = "There are no user accounts or databases storing user data.";
-"settings.privacy.statement.user_account" = "If allowed the wallet will share app usage habits with Unstoppable team. This is to understand which features are being used (or not) by our users. Being a privacy focused app we need some way to evaluate our efforts and without this we have no idea whether the features we built are being used or not.";
+"settings.privacy.description" = "%@ never collects personal data such as coin balances or wallet addresses. Only anonymous interface usage data is gathered to help enhance the app experience.";
 "settings.privacy.allow" = "Share UI Data";
+"settings.privacy.allow.description" = "This setting allows you to disable UI/UX analytics and ensure complete confidentiality.";
 
 // Settings -> Appearance
 
@@ -1565,6 +1619,25 @@
 "appearance.balance_value.fiat_coin" = "Fiat / Coin";
 
 "appearance.app_icon" = "App Icon";
+
+// Settings -> Subsription
+
+"subscription.premium.label" = "Premium";
+"subscription.title" = "Subscription";
+"subscription.get" = "Get Premium";
+"subscription.restore" = "Restore Purchase";
+"subscription.type" = "Subscription Type";
+"subscription.one-time" = "One-Time";
+"subscription.price" = "Price";
+"subscription.next_payment" = "Next payment date";
+"subscription.purchase_time" = "Start date";
+"subscription.status" = "Status";
+"subscription.manage" = "Manage Subscription";
+
+// Settings -> Support
+
+"settings.vip_support.description" = "Get direct assistance from our experts. A private chat will be created in Telegram to resolve your issue, and it will be closed once the problem is solved.";
+"settings.vip_support.start_chat" = "Start Chat";
 
 // Settings -> Contacts
 
@@ -1656,6 +1729,7 @@
 "chart.about.read_less" = "Read Less";
 
 "coin_page.return_of_investments" = "ROI";
+"coin_page.return_of_investments.vs" = "vs %@";
 
 // Create Wallet
 
@@ -1706,10 +1780,9 @@
 "intro.stay_private.title" = "Stay Private";
 "intro.stay_private.description" = "Do not leak your private and financial data to the world";
 
-// Guides
+// Education
 
-"guides.tab_bar_item" = "Academy";
-"guides.title" = "Academy";
+"education.title" = "Education";
 
 // Add Token
 
@@ -1717,11 +1790,11 @@
 "add_token.blockchain" = "Blockchain";
 "add_token.already_added" = "This token is already in the Coin Manager list";
 "add_token.invalid_contract_address" = "Invalid contract address";
-"add_token.invalid_bep2_symbol" = "Invalid BEP2 symbol";
+"add_token.invalid_ton_address" = "Invalid Ton address";
 "add_token.contract_address_not_found" = "Contract address not found in %@ blockchain";
-"add_token.bep2_symbol_not_found" = "BEP2 symbol not found";
+"add_token.jetton_master_not_found" = "Jetton Master not found in %@ blockchain";
 "add_token.input_placeholder.contract_address" = "Contract Address";
-"add_token.input_placeholder.bep2_symbol" = "BEP2 Symbol";
+"add_token.input_placeholder.jetton_master_address" = "Jetton Master Address";
 "add_token.coin_name" = "Coin Name";
 "add_token.symbol" = "Symbol";
 "add_token.decimals" = "Decimals";
@@ -1761,8 +1834,6 @@
 "wallet_connect_list.title" = "WalletConnect";
 "wallet_connect.list.empty_view_text" = "No active sessions";
 
-"wallet_connect.list.pairings" = "Pairings";
-"wallet_connect.list.version_text" = "Version %@";
 "wallet_connect.list.v1_bottom_text" = "In the first version of WalletConnect, you must go into sessions to see and confirm the request";
 "wallet_connect_list.new_connection" = "New Connection";
 "wallet_connect_list.disconnecting" = "Disconnecting";
@@ -1778,6 +1849,21 @@
 "wallet_connect.paired_dapps.cant_disconnect" = "Can't Disconnect";
 "wallet_connect.paired_dapps.disconnect_all" = "Delete All";
 "wallet_connect.pending_requests.nonactive_footer" = "To open a request you must activate the desired wallet";
+
+// Ton Connect
+
+"ton_connect.list.new_connection" = "New Connection";
+"ton_connect.list.no_connected_apps" = "No Connected Apps";
+"ton_connect.list.disconnect_app" = "Disconnect App";
+"ton_connect.list.disconnect_app.description" = "Are you sure you want to disconnect from \"%@\"?";
+"ton_connect.list.disconnect_app.disconnect" = "Disconnect";
+"ton_connect.connect.url" = "URL";
+"ton_connect.connect.wallet" = "Wallet";
+"ton_connect.connect.no_eligible_wallets" = "No eligible wallets";
+"ton_connect.connect.warning" = "By clicking approve, you allow this app to view your public address. This is an important security step to protect your data from potential phishing risks.";
+"ton_connect.connect.connect" = "Connect";
+"ton_connect.connect.reject" = "Reject";
+"ton_connect.invalid_transaction" = "Invalid Transaction";
 
 // App Status
 
@@ -2134,3 +2220,89 @@
 "transaction_filter.all_contacts" = "All Contacts";
 "transaction_filter.hide_suspicious_txs" = "Hide Suspicious Txs";
 "transaction_filter.hide_suspicious_txs.description" = "Hiding incoming transactions with the dust amount in stablecoins, this partially solves the  address poisoning attack problems.";
+
+// Purchases
+
+"premium.cell.title" = "Premium";
+"premium.cell.description" = "Upgrade your experience with %@ features!";
+"premium.cell.description.key" = "Premium";
+"premium.cell.try" = "Try for FREE";
+
+"purchases.title" = "Premium";
+"purchases.description" = "Choose the plan.";
+"purchases.type.pro" = "Pro";
+"purchases.type.vip" = "Vip";
+
+"purchases.token_insights" = "Token Insights";
+"purchases.token_insights.description" = "Full analytics and data about tokens.";
+"purchases.token_insights.info" = "Token Insights provides a comprehensive view of a token’s activity and performance metrics. This includes trading volume, liquidity levels, holder behavior, total value locked (TVL), and transaction activity. By offering detailed analytics, the feature enables users to evaluate token potential, monitor market trends, and make data-driven investment decisions. It’s a powerful tool for those who seek to understand token ecosystems and market dynamics in-depth.";
+
+"purchases.advanced_search" = "Advanced Search";
+"purchases.advanced_search.description" = "Custom filters for token searches.";
+"purchases.advanced_search.info" = "Advanced Search offers robust filtering options to find tokens based on specific criteria, such as trading volume, liquidity, security audits, and other relevant metrics. This feature streamlines the discovery process, making it easier to identify tokens that match individual preferences or investment strategies. It also includes customization options to save time and focus on what matters most to the user.";
+
+"purchases.trade_signals" = "Trade Signals";
+"purchases.trade_signals.description" = "Signals for confident trading.";
+"purchases.trade_signals.info" = "Trade Signals provide real-time notifications about potential trading opportunities and market risks. Using advanced algorithms, this feature analyzes market conditions, trends, and indicators to highlight profitable opportunities or warn against potential losses. Ideal for active traders, it ensures users stay informed and ready to act in a fast-moving market.";
+
+"purchases.tx_speed_up" = "Tx Speed UP / Cancel ";
+"purchases.tx_speed_up.description" = "Speed up and cancel transactions.";
+"purchases.tx_speed_up.info" = "Tx Speed Up / Cancel provides full control over blockchain transactions. With this feature, users can accelerate pending transactions by increasing gas fees or cancel unconfirmed transactions altogether if needed. It adds a layer of flexibility and convenience to transaction management, ensuring users remain in control of their activity.";
+
+"purchases.duress_mode" = "Duress Mode";
+"purchases.duress_mode.description" = "Hides main wallets in case of coercion.";
+"purchases.duress_mode.info" = "Duress Mode is a security feature designed to protect sensitive wallets in high-risk situations. It allows users to set up a secondary wallet with a separate PIN code. When under coercion, users can safely open the alternate wallet while keeping their primary wallets hidden. This feature provides peace of mind and protection for critical assets in emergencies.";
+
+"purchases.address_phishing" = "Address Phishing Protection";
+"purchases.address_phishing.description" = "Additional address check for fraud prevention.";
+"purchases.address_phishing.info" = "Address Phishing Protection safeguards users from sending funds to fraudulent addresses. Before each transaction, the recipient’s address is scanned for patterns associated with phishing scams. If flagged, the feature alerts the user, reducing the risk of accidental transfers to malicious actors.";
+
+"purchases.address_checker" = "Blacklist Address Checker";
+"purchases.address_checker.description" = "Alerts if the recipient address is blacklisted.";
+"purchases.address_checker.info" = "The Blacklist Address Checker cross-references recipient addresses against databases of known high-risk or flagged addresses. It prevents transactions from being sent to entities involved in fraud, scams, or other illicit activities. This feature is essential for maintaining security and compliance during transfers.";
+
+"purchases.privacy_mode" = "Privacy Mode";
+"purchases.privacy_mode.description" = "Full disconnection from data collection.";
+"purchases.privacy_mode.info" = "Privacy Mode enhances user confidentiality by masking wallet balances, transaction history, and other sensitive details. This feature ensures that third parties cannot view or track user activity, providing a discreet and secure experience for those who value privacy.";
+
+"purchases.vip_support" = "VIP Support";
+"purchases.vip_support.description" = "Direct chat.";
+"purchases.vip_support.info" = "VIP Support connects users with a dedicated support team available for priority assistance. This feature ensures prompt responses and personalized solutions for inquiries or issues. It’s tailored for users who require expert help and faster service.";
+
+"purchases.vip_club" = "VIP Club";
+"purchases.vip_club.description" = "Private chat with exclusive information.";
+"purchases.vip_club.info" = "The VIP Club offers exclusive access to a premium community of like-minded individuals. Members can participate in private discussions, gain insights from industry experts, and network with other top-tier users. This feature is perfect for those who want to stay ahead with insider knowledge and connections.";
+
+"purchases.wallet_description.title" = "Highly rated security, exceptional privacy, and a truly non-custodial wallet.";
+"purchases.wallet_description.approved" = "Approved and Audited By:";
+
+"purchases.button.try" = "Try for FREE";
+"purchases.button.activated" = "Activated";
+"purchases.button.upgrade" = "Upgrade";
+
+"purchase.period.title" = "Select Subscription";
+"purchase.period.annually" = "Annually";
+"purchase.period.monthly" = "Monthly";
+"purchase.period.onetime" = "One-Time";
+"purchase.period.onetime.description" = "for lifetime access";
+"purchase.period.save" = "save";
+"purchase.period.year" = "year";
+"purchase.period.month" = "month";
+"purchase.period.description1" = "Enjoy the first 7 days FREE.";
+"purchase.period.description2" = "You can cancel your App Store subscription at any time.";
+"purchase.lifetime.description" = "You can purchase one-time subscriiption without any restrictions";
+
+"purchases.period.button.try" = "Get 7 days for FREE";
+"purchases.period.button.subscribe" = "Subscribe";
+"purchases.period.button.buy" = "Buy now";
+"purchases.period.button.promo" = "Add Promo Code";
+
+"purchases.promocode.title" = "Enter Promo Code";
+"purchases.promocode.placeholder" = "";
+"purchases.promocode.button.invalid" = "Invalid Promo Code";
+"purchases.promocode.button.already_used" = "Promo Code Already Used";
+
+"purchases.successful_subscription.title" = "Premium";
+"purchases.successful_subscription.description" = "Thank you for your subscription!";
+"purchases.successful_subscription.subscribed" = "Enjoy the full power of the app.";
+"purchases.successful_subscription.button.go_app" = "Go to App";

@@ -466,10 +466,10 @@ struct MultiSwapView: View {
 
     @ViewBuilder private func providerFieldView(field: MultiSwapMainField) -> some View {
         HStack(spacing: .margin8) {
-            if let description = field.description {
+            if let infoDescription = field.infoDescription {
                 Text(field.title)
                     .textSubhead2()
-                    .modifier(Informed(description: description))
+                    .modifier(Informed(infoDescription: infoDescription))
             } else {
                 Text(field.title)
                     .textSubhead2()
@@ -495,7 +495,7 @@ struct MultiSwapView: View {
             }
         }
         .padding(.vertical, .margin12)
-        .padding(.leading, field.description == nil ? .margin16 : 0)
+        .padding(.leading, field.infoDescription == nil ? .margin16 : 0)
         .padding(.trailing, field.settingId == nil ? .margin16 : .margin12)
         .frame(minHeight: 40)
     }
@@ -505,7 +505,7 @@ struct MultiSwapView: View {
             return nil
         }
 
-        return ValueFormatter.instance.formatFull(coinValue: CoinValue(kind: .token(token: tokenIn), value: availableBalance))
+        return AppValue(token: tokenIn, value: availableBalance).formattedFull()
     }
 
     private func buttonState() -> (String, PrimaryButtonStyle.Style, Bool, Bool, MultiSwapPreSwapStep?) {

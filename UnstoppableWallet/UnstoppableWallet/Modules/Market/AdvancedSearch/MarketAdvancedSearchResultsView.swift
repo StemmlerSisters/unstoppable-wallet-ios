@@ -8,7 +8,9 @@ struct MarketAdvancedSearchResultsView: View {
     @Binding var isParentPresented: Bool
 
     @State private var sortBySelectorPresented = false
-    @State private var presentedFullCoin: FullCoin?
+    @State private var presentedCoin: Coin?
+    @State private var signalsPresented = false
+    @State private var subscriptionPresented = false
 
     init(marketInfos: [MarketInfo], timePeriod: HsTimePeriod, isParentPresented: Binding<Bool>) {
         _viewModel = StateObject(wrappedValue: MarketAdvancedSearchResultsViewModel(marketInfos: marketInfos, timePeriod: timePeriod))
@@ -26,17 +28,17 @@ struct MarketAdvancedSearchResultsView: View {
                         let coin = marketInfo.fullCoin.coin
 
                         ClickableRow(action: {
-                            presentedFullCoin = marketInfo.fullCoin
+                            presentedCoin = coin
                         }) {
                             itemContent(
                                 coin: coin,
+                                indicatorResult: marketInfo.indicatorsResult,
                                 marketCap: marketInfo.marketCap,
                                 price: marketInfo.price.flatMap { ValueFormatter.instance.formatFull(currency: viewModel.currency, value: $0) } ?? "n/a".localized,
                                 rank: marketInfo.marketCapRank,
                                 diff: marketInfo.priceChangeValue(timePeriod: viewModel.timePeriod)
                             )
                         }
-                        .watchlistSwipeActions(viewModel: watchlistViewModel, coinUid: coin.uid)
                     }
                     .onChange(of: viewModel.sortBy) { _ in withAnimation { proxy.scrollTo(themeListTopViewId) } }
                 }
@@ -51,9 +53,9 @@ struct MarketAdvancedSearchResultsView: View {
                 }
             }
         }
-        .sheet(item: $presentedFullCoin) { fullCoin in
-            CoinPageViewNew(coinUid: fullCoin.coin.uid).ignoresSafeArea()
-                .onFirstAppear { stat(page: .advancedSearchResults, event: .openCoin(coinUid: fullCoin.coin.uid)) }
+        .sheet(item: $presentedCoin) { coin in
+            CoinPageView(coin: coin).ignoresSafeArea()
+                .onFirstAppear { stat(page: .advancedSearchResults, event: .openCoin(coinUid: coin.uid)) }
         }
         .alert(
             isPresented: $sortBySelectorPresented,
@@ -67,6 +69,14 @@ struct MarketAdvancedSearchResultsView: View {
                 viewModel.sortBy = viewModel.sortBys[index]
             }
         )
+        .sheet(isPresented: $signalsPresented) {
+            MarketWatchlistSignalsView(setShowSignals: { [weak viewModel] in
+                viewModel?.set(showSignals: $0)
+            }, isPresented: $signalsPresented)
+        }
+        .sheet(isPresented: $subscriptionPresented) {
+            PurchasesView()
+        }
     }
 
     @ViewBuilder private func header() -> some View {
@@ -78,6 +88,19 @@ struct MarketAdvancedSearchResultsView: View {
                     Text(viewModel.sortBy.title)
                 }
                 .buttonStyle(SecondaryButtonStyle(style: .default, rightAccessory: .dropDown))
+
+                if viewModel.showSignals {
+                    signalsButton()
+                        .buttonStyle(SecondaryActiveButtonStyle(leftAccessory:
+                            .custom(icon: "star_premium_20", enabledColor: .themeDark, disabledColor: .themeDark)
+                        ))
+                } else {
+                    signalsButton()
+                        .buttonStyle(
+                            SecondaryButtonStyle(leftAccessory:
+                                .custom(image: Image("star_premium_20"), pressedColor: .themeJacob, activeColor: .themeJacob, disabledColor: .themeJacob)
+                            ))
+                }
             }
             .padding(.horizontal, .margin16)
             .padding(.vertical, .margin8)
@@ -96,28 +119,55 @@ struct MarketAdvancedSearchResultsView: View {
         )
     }
 
-    @ViewBuilder private func itemContent(coin: Coin?, marketCap: Decimal?, price: String, rank: Int?, diff: Decimal?) -> some View {
-        CoinIconView(coin: coin)
-
-        VStack(spacing: 1) {
-            HStack(spacing: .margin8) {
-                Text(coin?.code ?? "CODE").textBody()
-                Spacer()
-                Text(price).textBody()
+    @ViewBuilder private func signalsButton() -> some View {
+        Button(action: {
+            guard viewModel.premiumEnabled else {
+                subscriptionPresented = true
+                return
             }
 
-            HStack(spacing: .margin8) {
-                HStack(spacing: .margin4) {
-                    if let rank {
-                        BadgeViewNew(text: "\(rank)")
+            if viewModel.showSignals {
+                viewModel.set(showSignals: false)
+            } else {
+                signalsPresented = true
+            }
+        }) {
+            Text("market.watchlist.signals".localized)
+        }
+    }
+
+    @ViewBuilder private func itemContent(coin: Coin?, indicatorResult: TechnicalAdvice.Advice?, marketCap: Decimal?, price: String, rank: Int?, diff: Decimal?) -> some View {
+        CoinIconView(coin: coin)
+
+        HStack(spacing: .margin16) {
+            VStack(spacing: 1) {
+                HStack(spacing: .margin8) {
+                    Text(coin?.code ?? "CODE").textBody()
+
+                    if viewModel.showSignals, let signal = indicatorResult {
+                        MarketWatchlistSignalBadge(signal: signal)
                     }
 
-                    if let marketCap, let formatted = ValueFormatter.instance.formatShort(currency: viewModel.currency, value: marketCap) {
-                        Text(formatted).textSubhead2()
-                    }
+                    Spacer()
+                    Text(price).textBody()
                 }
-                Spacer()
-                DiffText(diff)
+
+                HStack(spacing: .margin8) {
+                    HStack(spacing: .margin4) {
+                        if let rank {
+                            BadgeViewNew(text: "\(rank)")
+                        }
+
+                        if let marketCap, let formatted = ValueFormatter.instance.formatShort(currency: viewModel.currency, value: marketCap) {
+                            Text(formatted).textSubhead2()
+                        }
+                    }
+                    Spacer()
+                    DiffText(diff)
+                }
+            }
+            if let coin {
+                WatchlistView.watchButton(viewModel: watchlistViewModel, coinUid: coin.uid)
             }
         }
     }

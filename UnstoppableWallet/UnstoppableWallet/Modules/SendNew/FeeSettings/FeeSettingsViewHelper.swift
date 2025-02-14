@@ -16,7 +16,7 @@ class FeeSettingsViewHelper {
         }
 
         let l2Value = FeeSettings.FeeValue.value(
-            primary: ValueFormatter.instance.formatShort(coinValue: l2AmountData.coinValue) ?? "",
+            primary: l2AmountData.appValue.formattedShort() ?? "",
             secondary: l2AmountData.currencyValue.flatMap { ValueFormatter.instance.formatShort(currencyValue: $0) } ?? "n/a".localized
         )
 
@@ -24,7 +24,7 @@ class FeeSettingsViewHelper {
 
         if let l1AmountData = evmFeeData.l1AmountData(feeToken: feeToken, currency: currency, feeTokenRate: feeTokenRate) {
             l1Value = FeeSettings.FeeValue.value(
-                primary: ValueFormatter.instance.formatShort(coinValue: l1AmountData.coinValue) ?? "",
+                primary: l1AmountData.appValue.formattedShort() ?? "",
                 secondary: l1AmountData.currencyValue.flatMap { ValueFormatter.instance.formatShort(currencyValue: $0) } ?? "n/a".localized
             )
         }
@@ -44,16 +44,16 @@ class FeeSettingsViewHelper {
         }
 
         return .value(
-            primary: ValueFormatter.instance.formatShort(coinValue: amountData.coinValue) ?? "",
+            primary: amountData.appValue.formattedShort() ?? "",
             secondary: amountData.currencyValue.flatMap { ValueFormatter.instance.formatShort(currencyValue: $0) } ?? "n/a".localized
         )
     }
 
-    @ViewBuilder func row(title: String, feeValue: FeeSettings.FeeValue, description: ActionSheetView.InfoDescription) -> some View {
+    @ViewBuilder func row(title: String, feeValue: FeeSettings.FeeValue, infoDescription: InfoDescription) -> some View {
         HStack(spacing: .margin8) {
             Text(title)
                 .textSubhead2()
-                .modifier(Informed(description: description))
+                .modifier(Informed(infoDescription: infoDescription))
 
             Spacer()
 
@@ -74,11 +74,11 @@ class FeeSettingsViewHelper {
         .frame(height: .heightCell56)
     }
 
-    @ViewBuilder func headerRow(title: String, description: ActionSheetView.InfoDescription) -> some View {
+    @ViewBuilder func headerRow(title: String, infoDescription: InfoDescription) -> some View {
         Text(title)
             .textSubhead1()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .modifier(Informed(description: description))
+            .modifier(Informed(infoDescription: infoDescription))
     }
 
     @ViewBuilder func inputNumberWithSteps(placeholder: String = "", text: Binding<String>, cautionState: Binding<FieldCautionState>, onTap: @escaping (StepChangeButtonsViewDirection) -> Void) -> some View {

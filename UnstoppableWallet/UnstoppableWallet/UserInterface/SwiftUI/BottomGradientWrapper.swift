@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct BottomGradientWrapper<Content: View, BottomContent: View>: View {
+    var backgroundColor: Color = .themeTyler
+
     @ViewBuilder let content: Content
     @ViewBuilder let bottomContent: BottomContent
 
@@ -11,7 +13,7 @@ struct BottomGradientWrapper<Content: View, BottomContent: View>: View {
 
                 VStack {
                     Spacer()
-                    LinearGradient(colors: [.themeTyler, Color.themeTyler.opacity(0)], startPoint: .bottom, endPoint: .top)
+                    LinearGradient(colors: [backgroundColor, backgroundColor.opacity(0)], startPoint: .bottom, endPoint: .top)
                         .frame(maxWidth: .infinity)
                         .frame(height: .margin16)
                 }

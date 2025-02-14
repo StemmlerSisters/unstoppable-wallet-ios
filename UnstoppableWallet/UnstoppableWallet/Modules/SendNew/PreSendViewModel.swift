@@ -4,11 +4,12 @@ import MarketKit
 
 class PreSendViewModel: ObservableObject {
     private let wallet: Wallet
-    private let mode: Mode
+    let resolvedAddress: ResolvedAddress
     private let currencyManager = App.shared.currencyManager
     private let marketKit = App.shared.marketKit
     private let walletManager = App.shared.walletManager
     private let adapterManager = App.shared.adapterManager
+    private let decimalParser = AmountDecimalParser()
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -19,7 +20,7 @@ class PreSendViewModel: ObservableObject {
             syncFiatAmount()
             syncSendData()
 
-            let amount = Decimal(string: amountString)
+            let amount = decimalParser.parseAnyDecimal(from: amountString)
 
             if amount != self.amount {
                 amountString = self.amount?.description ?? ""
@@ -29,7 +30,7 @@ class PreSendViewModel: ObservableObject {
 
     @Published var amountString: String = "" {
         didSet {
-            var amount = Decimal(string: amountString)
+            var amount = decimalParser.parseAnyDecimal(from: amountString)
 
             if amount == 0 {
                 amount = nil
@@ -49,7 +50,7 @@ class PreSendViewModel: ObservableObject {
         didSet {
             syncAmount()
 
-            let amount = Decimal(string: fiatAmountString)?.rounded(decimal: 2)
+            let amount = decimalParser.parseAnyDecimal(from: fiatAmountString)?.rounded(decimal: 2)
 
             if amount != fiatAmount {
                 fiatAmountString = fiatAmount?.description ?? ""
@@ -59,7 +60,7 @@ class PreSendViewModel: ObservableObject {
 
     @Published var fiatAmountString: String = "" {
         didSet {
-            let amount = Decimal(string: fiatAmountString)?.rounded(decimal: 2)
+            let amount = decimalParser.parseAnyDecimal(from: fiatAmountString)?.rounded(decimal: 2)
 
             guard amount != fiatAmount else {
                 return
@@ -83,20 +84,6 @@ class PreSendViewModel: ObservableObject {
 
     private var enteringFiat = false
 
-    @Published var address: String = ""
-    @Published var addressResult: AddressInput.Result = .idle {
-        didSet {
-            syncAddressState()
-        }
-    }
-
-    @Published var addressState: AddressState = .empty {
-        didSet {
-            syncHasMemo()
-            syncSendData()
-        }
-    }
-
     @Published var memo: String = "" {
         didSet {
             syncSendData()
@@ -104,32 +91,19 @@ class PreSendViewModel: ObservableObject {
     }
 
     var handler: IPreSendHandler?
-    @Published var sendData: SendData?
+    @Published var sendData: ExtendedSendData?
     @Published var cautions = [CautionNew]()
 
-    let addressVisible: Bool
-
-    init(wallet: Wallet, mode: Mode) {
+    init(wallet: Wallet, resolvedAddress: ResolvedAddress, amount: Decimal?) {
         self.wallet = wallet
-        self.mode = mode
+        self.resolvedAddress = resolvedAddress
 
         handler = SendHandlerFactory.preSendHandler(wallet: wallet)
         currency = currencyManager.baseCurrency
 
-        switch mode {
-        case let .predefined(address):
-            addressState = .valid(address: address)
-            addressVisible = false
-        default:
-            addressVisible = true
-        }
-
         defer {
-            switch mode {
-            case let .prefilled(address, amount):
-                self.address = address
+            if let amount {
                 self.amount = amount
-            default: ()
             }
         }
 
@@ -194,25 +168,13 @@ class PreSendViewModel: ObservableObject {
         fiatAmount = (amount * rate).rounded(decimal: 2)
     }
 
-    private func syncAddressState() {
-        switch addressResult {
-        case .idle:
-            addressState = .empty
-        case .loading, .invalid:
-            addressState = .invalid
-        case let .valid(success):
-            let address = success.address.raw
-            addressState = .valid(address: address)
-        }
-    }
-
     private func syncHasMemo() {
         guard let handler else {
             hasMemo = false
             return
         }
 
-        hasMemo = handler.hasMemo(address: addressState.address)
+        hasMemo = handler.hasMemo(address: resolvedAddress.address)
     }
 }
 
@@ -227,10 +189,10 @@ extension PreSendViewModel {
             return
         }
 
-        guard case let .valid(address) = addressState else {
-            sendData = nil
-            return
-        }
+        // guard case let .valid(address) = addressState else {
+        //     sendData = nil
+        //     return
+        // }
 
         guard let handler else {
             sendData = nil
@@ -240,11 +202,11 @@ extension PreSendViewModel {
         let trimmedMemo = memo.trimmingCharacters(in: .whitespaces)
         let memo = hasMemo && !trimmedMemo.isEmpty ? trimmedMemo : nil
 
-        let result = handler.sendData(amount: amount, address: address, memo: memo)
+        let result = handler.sendData(amount: amount, address: resolvedAddress.address, memo: memo)
 
         switch result {
         case let .valid(sendData):
-            self.sendData = sendData
+            self.sendData = ExtendedSendData(sendData: sendData, address: resolvedAddress.address)
             cautions = []
         case let .invalid(cautions):
             sendData = nil
@@ -269,6 +231,12 @@ extension PreSendViewModel {
 }
 
 extension PreSendViewModel {
+    struct ExtendedSendData {
+        let sendData: SendData
+        let address: String?
+    }
+
+    // TODO: remove this, not needed for new send
     enum Mode {
         case regular
         case prefilled(address: String, amount: Decimal?)
@@ -277,19 +245,6 @@ extension PreSendViewModel {
         var amount: Decimal? {
             switch self {
             case let .prefilled(_, amount): return amount
-            default: return nil
-            }
-        }
-    }
-
-    enum AddressState {
-        case empty
-        case invalid
-        case valid(address: String)
-
-        var address: String? {
-            switch self {
-            case let .valid(address): return address
             default: return nil
             }
         }

@@ -8,6 +8,8 @@ import HsToolKit
 import MarketKit
 import RxSwift
 import ThemeKit
+import TonKit
+import TonSwift
 import TronKit
 import UIKit
 import UniswapKit
@@ -101,10 +103,7 @@ protocol ISendTronAdapter {
 }
 
 protocol ISendTonAdapter {
-    var availableBalance: Decimal { get }
-    func validate(address: String) throws
-    func estimateFee() async throws -> Decimal
-    func send(recipient: String, amount: Decimal, memo: String?) async throws
+    func transferData(recipient: FriendlyAddress, amount: TonAdapter.SendAmount, comment: String?) throws -> TransferData
 }
 
 protocol IErc20Adapter {
@@ -115,15 +114,6 @@ protocol IErc20Adapter {
 
 protocol IApproveDataProvider {
     func approveTransactionData(spenderAddress: EvmKit.Address, amount: BigUInt) -> TransactionData
-}
-
-protocol ISendBinanceAdapter {
-    var availableBalance: Decimal { get }
-    var availableBinanceBalance: Decimal { get }
-    func validate(address: String) throws
-    var fee: Decimal { get }
-    func sendSingle(amount: Decimal, address: String, memo: String?) -> Single<Void>
-    func send(amount: Decimal, address: String, memo: String?) async throws -> String
 }
 
 protocol ISendZcashAdapter {

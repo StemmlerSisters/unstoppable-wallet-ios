@@ -4,8 +4,9 @@ import MarketKit
 import SwiftUI
 
 enum SendField {
-    case amount(title: String, token: Token, coinValueType: CoinValueType, currencyValue: CurrencyValue?, type: AmountType)
-    case value(title: String, description: ActionSheetView.InfoDescription?, coinValue: CoinValue?, currencyValue: CurrencyValue?, formatFull: Bool)
+    case amount(title: String, token: Token, appValueType: AppValueType, currencyValue: CurrencyValue?, type: AmountType)
+    case value(title: String, description: InfoDescription?, appValue: AppValue?, currencyValue: CurrencyValue?, formatFull: Bool)
+    case doubleValue(title: String, description: InfoDescription?, value1: String, value2: String?)
     case levelValue(title: String, value: String, level: ValueLevel)
     case address(title: String, value: String, blockchainType: BlockchainType)
     case price(title: String, tokenA: Token, tokenB: Token, amountA: Decimal, amountB: Decimal)
@@ -13,7 +14,7 @@ enum SendField {
 
     @ViewBuilder var listRow: some View {
         switch self {
-        case let .amount(title, token, coinValueType, currencyValue, type):
+        case let .amount(title, token, appValueType, currencyValue, type):
             ListRow {
                 CoinIconView(coin: token.coin)
 
@@ -26,7 +27,7 @@ enum SendField {
                     Spacer()
 
                     VStack(alignment: .trailing, spacing: 1) {
-                        if let formatted = coinValueType.formatted(full: true) {
+                        if let formatted = appValueType.formattedFull {
                             Text(formatted)
                                 .textSubhead1(color: type.color)
                                 .multilineTextAlignment(.trailing)
@@ -44,12 +45,12 @@ enum SendField {
                     }
                 }
             }
-        case let .value(title, description, coinValue, currencyValue, formatFull):
-            ListRow(padding: EdgeInsets(top: .margin12, leading: description == nil ? .margin16 : 0, bottom: .margin12, trailing: .margin16)) {
-                if let description {
+        case let .value(title, infoDescription, appValue, currencyValue, formatFull):
+            ListRow(padding: EdgeInsets(top: .margin12, leading: infoDescription == nil ? .margin16 : 0, bottom: .margin12, trailing: .margin16)) {
+                if let infoDescription {
                     Text(title)
                         .textSubhead2()
-                        .modifier(Informed(description: description))
+                        .modifier(Informed(infoDescription: infoDescription))
                 } else {
                     Text(title)
                         .textSubhead2()
@@ -58,7 +59,7 @@ enum SendField {
                 Spacer()
 
                 VStack(alignment: .trailing, spacing: 1) {
-                    if let formatted = (formatFull ? coinValue?.formattedFull : coinValue?.formattedShort) {
+                    if let formatted = (formatFull ? appValue?.formattedFull() : appValue?.formattedShort()) {
                         Text(formatted)
                             .textSubhead1(color: .themeLeah)
                             .multilineTextAlignment(.trailing)
@@ -105,6 +106,31 @@ enum SendField {
                 }
                 .buttonStyle(SecondaryCircleButtonStyle(style: .default))
             }
+        case let .doubleValue(title, infoDescription, value1, value2):
+            ListRow(padding: EdgeInsets(top: .margin12, leading: infoDescription == nil ? .margin16 : 0, bottom: .margin12, trailing: .margin16)) {
+                if let infoDescription {
+                    Text(title)
+                        .textSubhead2()
+                        .modifier(Informed(infoDescription: infoDescription))
+                } else {
+                    Text(title)
+                        .textSubhead2()
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text(value1)
+                        .textSubhead1(color: .themeLeah)
+                        .multilineTextAlignment(.trailing)
+
+                    if let value2 {
+                        Text(value2)
+                            .textSubhead1(color: .themeLeah)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+            }
         }
     }
 
@@ -116,17 +142,25 @@ enum SendField {
         }
     }
 
-    enum CoinValueType {
-        case regular(coinValue: CoinValue)
-        case infinity(kind: CoinValue.Kind)
-        case withoutAmount(kind: CoinValue.Kind)
+    enum AppValueType {
+        case regular(appValue: AppValue)
+        case infinity(code: String)
+        case withoutAmount(code: String)
 
-        func formatted(full: Bool = false) -> String? {
+        private func formatted(full: Bool) -> String? {
             switch self {
-            case let .regular(coinValue): return full ? ValueFormatter.instance.formatFull(coinValue: coinValue) : ValueFormatter.instance.formatShort(coinValue: coinValue)
-            case let .infinity(kind): return "∞ \(kind.symbol)"
-            case let .withoutAmount(kind): return "\(kind.symbol)"
+            case let .regular(appValue): return full ? appValue.formattedFull() : appValue.formattedShort()
+            case let .infinity(code): return "∞ \(code)"
+            case let .withoutAmount(code): return "\(code)"
             }
+        }
+
+        var formattedFull: String? {
+            formatted(full: true)
+        }
+
+        var formattedShort: String? {
+            formatted(full: false)
         }
     }
 

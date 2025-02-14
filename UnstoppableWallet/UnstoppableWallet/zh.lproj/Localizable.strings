@@ -452,8 +452,10 @@
 
 "send.confirmation.title" = "确认";
 "send.confirmation.you_send" = "您发送";
+"send.confirmation.you_receive" = "You Receive";
 "send.confirmation.transfer" = "转帐";
 "send.confirmation.to" = "接收人";
+"send.confirmation.from" = "From";
 "send.confirmation.own" = "自有";
 "send.confirmation.contact_name" = "联系人姓名";
 "send.confirmation.domain" = "域名";
@@ -467,6 +469,10 @@
 "send.confirmation.replace_by_fee" = "替换交易";
 "send.confirmation.replaced_transactions" = "已替换的交易";
 "send.confirmation.input" = "输入";
+"send.confirmation.comment" = "Comment";
+"send.confirmation.action" = "Action";
+"send.confirmation.status" = "状态";
+"send.confirmation.status.failed" = "Failed";
 
 "send.confirmation.sync_failed" = "同步失败";
 "send.confirmation.invalid_data" = "无效数据";
@@ -702,9 +708,8 @@
 
 "market.global.market_cap" = "总市值";
 "market.global.volume" = "24小时交易量";
-"market.global.btc_dominance" = "BTC市场占比";
-"market.global.etf_inflow" = "ETF 输入";
-"market.global.tvl_in_defi" = "DeFi中的TVL";
+"market.global.tvl" = "TVL";
+"market.global.etf" = "ETF";
 
 "market.tab.news" = "发现";
 "market.tab.coins" = "币";
@@ -731,8 +736,8 @@
 "market.time_period.2w" = "2周";
 "market.time_period.1m" = "1月";
 "market.time_period.3m" = "3月";
-"market.time_period.6m" = "6 Months";
-"market.time_period.1y" = "1 Year";
+"market.time_period.6m" = "6月";
+"market.time_period.1y" = "1年";
 "market.time_period.2y" = "2 年";
 "market.time_period.5y" = "5 年";
 "market.time_period.1d.short" = "1天";
@@ -879,8 +884,8 @@
 "market.advanced_search.week" = "1周";
 "market.advanced_search.week2" = "2周";
 "market.advanced_search.month" = "1月";
-"market.advanced_search.month6" = "6 Months";
-"market.advanced_search.year" = "1 Year";
+"market.advanced_search.month6" = "6月";
+"market.advanced_search.year" = "1年";
 
 "market.advanced_search.day.short" = "24时";
 "market.advanced_search.week.short" = "7天";
@@ -953,7 +958,7 @@
 "coin_overview.roi.day14" = "2周";
 "coin_overview.roi.day30" = "1月";
 "coin_overview.roi.day200" = "6月";
-"coin_overview.roi.year1" = "1 Year";
+"coin_overview.roi.year1" = "1年";
 
 "coin_overview.overview" = "行情";
 "coin_overview.description_warning" = "这是一个基于给定的加密货币所提供的参考材料生成的 AI 描述。它可能包含错误。";
@@ -1007,6 +1012,7 @@
 "coin_analytics.indicators.disclaimer" = "请记住始终要进行风险管理，并注意这不是财务建议";
 "coin_analytics.indicators.info.title" = "技术指标";
 "coin_analytics.indicators.info.description" = "我们使用布林带 + RSI 策略来确定交易信号。所有计算都基于日线图，并为中长期提供建议。该策略的本质是资产价格应该达到一个极端点，突破布林带通道，并且 RSI 应该处于超买/超卖区域。在价格回到通道后，有很高的概率价格回归到平均值或尝试从另一侧突破通道。请注意，在正确信号出现之前，该策略在市场强劲波动期间可能会出现多个虚假信号。\n\n请记住，在交易中应用风险管理非常重要，如果市场情况发生变化，请记得及时止损！ ";
+"coin_analytics.indicators.details" = "详细信息";
 "coin_analytics.indicators.hide_details" = "隐藏细节";
 "coin_analytics.indicators.show_details" = "显示详细信息";
 "coin_analytics.indicators.summary" = "总结";
@@ -1215,7 +1221,7 @@
 "transactions.pending" = "待处理";
 "transactions.processing" = "正在处理";
 "transactions.completed" = "已完成";
-"transactions.failed" = "失败";
+"transactions.failed" = "Failed";
 
 "transactions.receive" = "接收";
 "transactions.send" = "已发送";
@@ -1226,6 +1232,7 @@
 "transactions.contract_call" = "合约调用";
 "transactions.contract_creation" = "合约创建";
 "transactions.external_call" = "外部呼叫";
+"transactions.contract_deploy" = "合约部署";
 
 "transactions.to" = "接收人%@";
 "transactions.from" = "发送人%@";
@@ -1246,6 +1253,9 @@
 "transactions.unknown_transaction.title" = "未知交易";
 "transactions.unknown_transaction.description" = "无法解析交易";
 
+"transactions.ton_transaction.title" = "Ton 交易";
+"transactions.contract" = "合同";
+
 // Transaction Info
 
 "tx_info.title" = "交易信息";
@@ -1253,8 +1263,8 @@
 "tx_info.title_approval" = "互兑批准";
 "tx_info.status.pending" = "待处理";
 "tx_info.status.completed" = "已完成";
-"tx_info.status.failed" = "失败";
-"tx_info.from_hash" = "发件人";
+"tx_info.status.failed" = "Failed";
+"tx_info.from_hash" = "From";
 "tx_info.transaction_id" = "交易ID";
 "tx_info.to_hash" = "接收人";
 "tx_info.spender" = "消费人";
@@ -1303,7 +1313,8 @@
 "settings.tell_friends" = "分享给好友";
 "settings.contact_us" = "联系我们";
 "settings.social_networks.label" = "Be Unstoppable";
-"settings.social_networks.footer" = "Learn and master crypto via exclusive videos. Get to know us informally. Be the first to see things we work on.";
+"settings.social_networks.footer" = "通过独家视频学习和掌握加密。非正式地了解我们。成为第一个看看我们正在工作的事情。";
+"settings.get_your_tokens" = "Get UWT Tokens";
 
 // Settings -> Base Currency
 
@@ -1658,6 +1669,7 @@
 "chart.about.read_less" = "关闭";
 
 "coin_page.return_of_investments" = "ROI";
+"coin_page.return_of_investments.vs" = "vs %@";
 
 // Create Wallet
 
@@ -1708,10 +1720,9 @@
 "intro.stay_private.title" = "保持私密";
 "intro.stay_private.description" = "不要向外界泄漏您的私密和财务数据";
 
-// Guides
+// Education
 
-"guides.tab_bar_item" = "学院";
-"guides.title" = "学院";
+"education.title" = "Education";
 
 // Add Token
 
@@ -1720,10 +1731,13 @@
 "add_token.already_added" = "该代币已在代币管理列表中";
 "add_token.invalid_contract_address" = "请输入正确的合约地址";
 "add_token.invalid_bep2_symbol" = "无效的 BEP2 符号";
+"add_token.invalid_ton_address" = "无效Ton 地址";
 "add_token.contract_address_not_found" = "在 %@ 区块链中找不到合同地址";
+"add_token.jetton_master_not_found" = "在 %@ 区块链中找不到杰顿大师";
 "add_token.bep2_symbol_not_found" = "找不到 BEP2 符号";
 "add_token.input_placeholder.contract_address" = "智能合约地址";
 "add_token.input_placeholder.bep2_symbol" = "BEP2 符号";
+"add_token.input_placeholder.jetton_master_address" = "Jetton Master 地址";
 "add_token.coin_name" = "代币图片";
 "add_token.symbol" = "标志";
 "add_token.decimals" = "小数";
@@ -1763,8 +1777,6 @@
 "wallet_connect_list.title" = "WalletConnect";
 "wallet_connect.list.empty_view_text" = "没有活跃会话";
 
-"wallet_connect.list.pairings" = "货币对";
-"wallet_connect.list.version_text" = "版本%@";
 "wallet_connect.list.v1_bottom_text" = "在WalletConnect的第一个版本中，您必须进入会话以查看和确认请求";
 "wallet_connect_list.new_connection" = "新连接";
 "wallet_connect_list.disconnecting" = "正在断开连接";
@@ -1780,6 +1792,20 @@
 "wallet_connect.paired_dapps.cant_disconnect" = "无法断开连接";
 "wallet_connect.paired_dapps.disconnect_all" = "全部刪除";
 "wallet_connect.pending_requests.nonactive_footer" = "若要打开请求，您必须激活所需钱包";
+
+// Ton Connect
+
+"ton_connect.list.new_connection" = "新连接";
+"ton_connect.list.no_connected_apps" = "No Connected Apps";
+"ton_connect.list.disconnect_app" = "Disconnect App";
+"ton_connect.list.disconnect_app.description" = "Are you sure you want to disconnect from \"%@\"?";
+"ton_connect.list.disconnect_app.disconnect" = "断开连接";
+"ton_connect.connect.url" = "URL";
+"ton_connect.connect.wallet" = "Wallet";
+"ton_connect.connect.no_eligible_wallets" = "No eligible wallets";
+"ton_connect.connect.warning" = "点击批准，表示您允许此应用查看您的公开地址。这是保护您的数据免受潜在钓鱼风险威胁的重要安全步骤。";
+"ton_connect.connect.connect" = "连接";
+"ton_connect.connect.reject" = "拒绝";
 
 // App Status
 
@@ -1802,7 +1828,7 @@
 "status_info.processing.content" = "交易已包括在区块链中，但尚未达到永久终结状态。此时，可以安全地考虑以较小金额完成的交易。对于大额支付，建议等待直至交易状态变为已完成。";
 "status_info.completed.title" = "已完成";
 "status_info.confirmed.content" = "交易已完成并被视为永久和不可逆。";
-"status_info.failed.title" = "失败";
+"status_info.failed.title" = "Failed";
 "status_info.failed.content" = "交易没有得到处理，也没有进行价值转移，根据失败的原因，有些失败的交易可能会耗费交易费用。 被另一笔交易替换或取消的交易不会消耗交易费用，也会出现为失败。 %@ 应用程序无法显示交易失败的原因。 但用户可以在公共区块探索者i上看到它。 。etherscan.io。";
 
 // Onboarding
@@ -2042,7 +2068,7 @@
 // Activate Subscription
 
 "activate_subscription.title" = "激活";
-"activate_subscription.wallet" = "钱包";
+"activate_subscription.wallet" = "Wallet";
 "activate_subscription.address" = "地址";
 "activate_subscription.message" = "待签名消息";
 "activate_subscription.sign" = "签名";

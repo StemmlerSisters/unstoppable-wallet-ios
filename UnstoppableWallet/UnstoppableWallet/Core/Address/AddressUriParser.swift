@@ -72,7 +72,7 @@ class AddressUriParser {
         }
 
         // try to parse ton deeplink
-        if scheme == DeepLinkManager.tonDeepLinkScheme, let tonScheme = BlockchainType.ton.uriScheme {
+        if scheme == DeepLinkManager.deepLinkScheme, let tonScheme = BlockchainType.ton.uriScheme {
             var uri = AddressUri(scheme: tonScheme)
             uri.address = components.path.stripping(prefix: "/")
 
@@ -172,7 +172,6 @@ extension BlockchainType {
         case .dash: return "dash"
         case .zcash: return "zcash"
         case .ethereum: return "ethereum"
-        case .binanceChain: return "binancecoin"
         case .tron: return "tron"
         case .ton: return "toncoin"
         default: return nil
@@ -192,7 +191,6 @@ extension BlockchainType {
         case .dash: return true
         case .zcash: return true
         case .ethereum: return true
-        case .binanceChain: return true
         case .tron: return true
         case .ton: return true
         default: return false

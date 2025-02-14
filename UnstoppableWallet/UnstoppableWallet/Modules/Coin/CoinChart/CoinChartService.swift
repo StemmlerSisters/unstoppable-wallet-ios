@@ -18,7 +18,7 @@ class CoinChartService {
     private let marketKit: MarketKit.Kit
     private let localStorage: LocalStorage
     private let currencyManager: CurrencyManager
-    private let indicatorRepository: IChartIndicatorsRepository
+    let indicatorRepository: IChartIndicatorsRepository
     private let coinUid: String
 
     private let indicatorsShownUpdatedRelay = PublishRelay<Void>()
@@ -87,6 +87,7 @@ class CoinChartService {
         Task { [weak self, marketKit, coinUid] in
             do {
                 self?.startTime = try await marketKit.chartPriceStart(coinUid: coinUid)
+                self?.fetchData()
             } catch {
                 self?.state = .failed(error)
             }
@@ -156,7 +157,10 @@ extension CoinChartService {
     }
 
     var validIntervals: [HsTimePeriod] {
-        HsChartHelper.validIntervals(startTime: startTime)
+        if let startTime {
+            return HsChartHelper.validIntervals(startTime: startTime)
+        }
+        return []
     }
 
     func setPeriodAll() {
@@ -166,7 +170,7 @@ extension CoinChartService {
     func fetchWithUpdatedIndicators() {
         switch periodType {
         case let .byCustomPoints(interval, _):
-            let updatedType: HsPeriodType = .byCustomPoints(interval, indicatorRepository.extendedPointCount)
+            let updatedType: HsPeriodType = .byCustomPoints(App.shared.priceChangeModeManager.convert(period: interval), indicatorRepository.extendedPointCount)
             if periodType == updatedType {
                 fetch()
             } else {
@@ -177,7 +181,7 @@ extension CoinChartService {
     }
 
     func setPeriod(interval: HsTimePeriod) {
-        periodType = .byCustomPoints(interval, indicatorRepository.extendedPointCount)
+        periodType = .byCustomPoints(App.shared.priceChangeModeManager.convert(period: interval), indicatorRepository.extendedPointCount)
     }
 
     func start() {
@@ -199,8 +203,13 @@ extension CoinChartService {
 
         if startTime == nil {
             fetchStartTime()
+            return
         }
 
+        fetchData()
+    }
+
+    private func fetchData() {
         if chartPointsMap[periodType] != nil {
             syncState()
         } else {

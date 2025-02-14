@@ -102,8 +102,8 @@ struct ReceiveAddressView: View {
         )
         .alertButtonTint(color: .themeJacob)
         .bottomSheet(item: $warningAlertPopup) { popup in
-            ActionSheetView(
-                image: .warning,
+            BottomSheetView(
+                icon: .warning,
                 title: popup.title,
                 items: [
                     .highlightedDescription(text: popup.description.text, style: popup.description.style),
@@ -145,7 +145,7 @@ struct ReceiveAddressView: View {
                         .padding(.margin2)
                         .background(Color.white)
 
-                    Image(uiImage: UIImage(named: AppIcon.main.imageName) ?? UIImage())
+                    Image(AppIcon.main.imageName)
                         .resizable()
                         .scaledToFit()
                         .frame(width: appIconSize, height: appIconSize)
@@ -224,12 +224,10 @@ struct ReceiveAddressView: View {
             Text("deposit.account".localized)
                 .textSubhead2()
                 .modifier(
-                    Informed(description:
-                        ActionSheetView.InfoDescription(
-                            title: "deposit.not_active.title".localized,
-                            description: "deposit.not_active.tron_description".localized
-                        )
-                    ))
+                    Informed(infoDescription: .init(
+                        title: "deposit.not_active.title".localized,
+                        description: "deposit.not_active.tron_description".localized
+                    )))
             Spacer()
             Text("deposit.not_active".localized).textSubhead1(color: .themeYellow)
         }
@@ -240,12 +238,10 @@ struct ReceiveAddressView: View {
             Text("cex_deposit.memo".localized)
                 .textSubhead2()
                 .modifier(
-                    Informed(description:
-                        ActionSheetView.InfoDescription(
-                            title: "cex_deposit.memo_warning.title".localized,
-                            description: "cex_deposit.memo_warning.description".localized
-                        )
-                    ))
+                    Informed(infoDescription: .init(
+                        title: "cex_deposit.memo_warning.title".localized,
+                        description: "cex_deposit.memo_warning.description".localized
+                    )))
             Spacer()
             Text(memo).textSubhead1(color: .themeLeah)
             Button(action: {

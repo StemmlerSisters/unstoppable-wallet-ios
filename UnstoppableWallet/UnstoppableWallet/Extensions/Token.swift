@@ -8,7 +8,6 @@ extension Token {
         case .native:
             switch blockchainType {
             case .ethereum, .binanceSmartChain, .tron, .ton: return nil
-            case .binanceChain: return "BEP2"
             default: return blockchain.name
             }
         case .eip20:
@@ -18,8 +17,8 @@ extension Token {
             case .tron: return "TRC20"
             default: return blockchain.name
             }
-        case .bep2:
-            return "BEP2"
+        case .jetton:
+            return "JETTON"
         default:
             return blockchain.name
         }
@@ -43,6 +42,7 @@ extension Token {
         case .arbitrumOne: return true
         case .gnosis: return true
         case .fantom: return true
+        case .base: return true
         default: return false
         }
     }

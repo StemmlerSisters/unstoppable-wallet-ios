@@ -23,9 +23,12 @@ class AppManager {
     private let statManager: StatManager
     private let walletConnectSocketConnectionService: WalletConnectSocketConnectionService
     private let nftMetadataSyncer: NftMetadataSyncer
+    private let tonKitManager: TonKitManager
+    private let spamAddressManager: SpamAddressManager
 
     private let didBecomeActiveSubject = PublishSubject<Void>()
     private let willEnterForegroundSubjectOld = PublishSubject<Void>()
+    private let didEnterBackgroundSubject = PassthroughSubject<Void, Never>()
     private let willEnterForegroundSubject = PassthroughSubject<Void, Never>()
 
     init(accountManager: AccountManager, walletManager: WalletManager, adapterManager: AdapterManager, lockManager: LockManager,
@@ -34,7 +37,8 @@ class AppManager {
          appVersionManager: AppVersionManager, rateAppManager: RateAppManager,
          logRecordManager: LogRecordManager,
          deepLinkManager: DeepLinkManager, evmLabelManager: EvmLabelManager, balanceHiddenManager: BalanceHiddenManager, statManager: StatManager,
-         walletConnectSocketConnectionService: WalletConnectSocketConnectionService, nftMetadataSyncer: NftMetadataSyncer)
+         walletConnectSocketConnectionService: WalletConnectSocketConnectionService, nftMetadataSyncer: NftMetadataSyncer, tonKitManager: TonKitManager,
+         spamAddressManager: SpamAddressManager)
     {
         self.accountManager = accountManager
         self.walletManager = walletManager
@@ -54,6 +58,8 @@ class AppManager {
         self.statManager = statManager
         self.walletConnectSocketConnectionService = walletConnectSocketConnectionService
         self.nftMetadataSyncer = nftMetadataSyncer
+        self.tonKitManager = tonKitManager
+        self.spamAddressManager = spamAddressManager
     }
 
     private func warmUp() {
@@ -97,9 +103,13 @@ extension AppManager {
     func didEnterBackground() {
         debugBackgroundLogger?.logEnterBackground()
 
+        didEnterBackgroundSubject.send()
+
         lockManager.didEnterBackground()
         walletConnectSocketConnectionService.didEnterBackground()
         balanceHiddenManager.didEnterBackground()
+
+        tonKitManager.tonKit?.stopListener()
     }
 
     func willEnterForeground() {
@@ -120,6 +130,8 @@ extension AppManager {
 
         nftMetadataSyncer.sync()
 
+        tonKitManager.tonKit?.startListener()
+
         AppWidgetConstants.allKinds.forEach { WidgetCenter.shared.reloadTimelines(ofKind: $0) }
     }
 
@@ -133,6 +145,10 @@ extension AppManager {
 }
 
 extension AppManager {
+    var didEnterBackgroundPublisher: AnyPublisher<Void, Never> {
+        didEnterBackgroundSubject.eraseToAnyPublisher()
+    }
+
     var willEnterForegroundPublisher: AnyPublisher<Void, Never> {
         willEnterForegroundSubject.eraseToAnyPublisher()
     }

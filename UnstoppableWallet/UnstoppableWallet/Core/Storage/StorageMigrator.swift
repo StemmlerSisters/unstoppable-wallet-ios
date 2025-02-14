@@ -7,7 +7,7 @@ import RxCocoa
 import RxSwift
 
 enum StorageMigrator {
-    static func migrate(dbPool: DatabasePool) throws {
+    static func migrate(dbPool: DatabasePool, localStorage: LocalStorage) throws {
         var migrator = DatabaseMigrator()
 
         migrator.registerMigration("createAccountRecordsTable") { db in
@@ -724,7 +724,7 @@ enum StorageMigrator {
                 t.primaryKey([EnabledWalletCache_v_0_36.Columns.tokenQueryId.name, EnabledWalletCache_v_0_36.Columns.accountId.name], onConflict: .replace)
             }
 
-            var enabledWallets: [EnabledWallet] = []
+            var enabledWallets: [EnabledWallet_v_0_40] = []
             let rows = try Row.fetchCursor(db, sql: "SELECT * FROM \(EnabledWallet_v_0_34.databaseTableName)")
 
             while let row = try rows.next() {
@@ -732,24 +732,26 @@ enum StorageMigrator {
                     continue
                 }
 
-                let updatedWallet = EnabledWallet(
+                let updatedWallet = EnabledWallet_v_0_40(
                     tokenQueryId: tokenQueryId,
-                    accountId: row["accountId"], coinName: row["coinName"],
-                    coinCode: row["coinCode"], tokenDecimals: row["tokenDecimals"]
+                    accountId: row["accountId"],
+                    coinName: row["coinName"],
+                    coinCode: row["coinCode"],
+                    tokenDecimals: row["tokenDecimals"]
                 )
 
                 enabledWallets.append(updatedWallet)
             }
 
             try db.drop(table: EnabledWallet_v_0_34.databaseTableName)
-            try db.create(table: EnabledWallet.databaseTableName) { t in
-                t.column(EnabledWallet.Columns.tokenQueryId.name, .text).notNull()
-                t.column(EnabledWallet.Columns.accountId.name, .text).notNull()
-                t.column(EnabledWallet.Columns.coinName.name, .text)
-                t.column(EnabledWallet.Columns.coinCode.name, .text)
-                t.column(EnabledWallet.Columns.tokenDecimals.name, .integer)
+            try db.create(table: EnabledWallet_v_0_40.databaseTableName) { t in
+                t.column(EnabledWallet_v_0_40.Columns.tokenQueryId.name, .text).notNull()
+                t.column(EnabledWallet_v_0_40.Columns.accountId.name, .text).notNull()
+                t.column(EnabledWallet_v_0_40.Columns.coinName.name, .text)
+                t.column(EnabledWallet_v_0_40.Columns.coinCode.name, .text)
+                t.column(EnabledWallet_v_0_40.Columns.tokenDecimals.name, .integer)
 
-                t.primaryKey([EnabledWallet.Columns.tokenQueryId.name, EnabledWallet.Columns.accountId.name], onConflict: .replace)
+                t.primaryKey([EnabledWallet_v_0_40.Columns.tokenQueryId.name, EnabledWallet_v_0_40.Columns.accountId.name], onConflict: .replace)
             }
 
             for wallet in enabledWallets {
@@ -821,6 +823,41 @@ enum StorageMigrator {
             }
         }
 
+        migrator.registerMigration("Add coinImage to EnabledWallet") { db in
+            try db.alter(table: EnabledWallet.databaseTableName) { t in
+                t.add(column: EnabledWallet.Columns.coinImage.name, .text)
+            }
+        }
+
+        migrator.registerMigration("create restoreState") { db in
+            let oldStates = try EvmAccountRestoreState.fetchAll(db)
+            try db.drop(table: EvmAccountRestoreState.databaseTableName)
+
+            try db.create(table: "restoreState") { t in
+                t.column(RestoreState.Columns.accountId.name, .text).notNull()
+                t.column(RestoreState.Columns.blockchainUid.name, .text).notNull()
+                t.column(RestoreState.Columns.shouldRestore.name, .boolean).notNull()
+                t.column(RestoreState.Columns.initialRestored.name, .boolean).notNull()
+
+                t.primaryKey([RestoreState.Columns.accountId.name, RestoreState.Columns.blockchainUid.name], onConflict: .replace)
+            }
+
+            let states = oldStates.map { RestoreState(accountId: $0.accountId, blockchainUid: $0.blockchainUid, shouldRestore: $0.restored) }
+
+            for state in states {
+                try state.insert(db)
+            }
+        }
+
+         migrator.registerMigration("remove bep2 coins") { db in
+             let hasBep2Token = try EnabledWallet.filter(EnabledWallet.Columns.tokenQueryId.like("binancecoin|%")).fetchCount(db) > 0
+
+             if hasBep2Token {
+                 localStorage.hasBep2Token = true
+                 try EnabledWallet.filter(EnabledWallet.Columns.tokenQueryId.like("binancecoin|%")).deleteAll(db)
+             }
+         }
+
         try migrator.migrate(dbPool)
     }
 
@@ -843,7 +880,6 @@ enum StorageMigrator {
         case let .mrc20(address): return TokenQuery(blockchainType: .polygon, tokenType: .eip20(address: address))
         case let .optimismErc20(address): return TokenQuery(blockchainType: .optimism, tokenType: .eip20(address: address))
         case let .arbitrumOneErc20(address): return TokenQuery(blockchainType: .arbitrumOne, tokenType: .eip20(address: address))
-        case let .bep2(symbol): return symbol == "BNB" ? TokenQuery(blockchainType: .binanceChain, tokenType: .native) : TokenQuery(blockchainType: .binanceChain, tokenType: .bep2(symbol: symbol))
         default: return TokenQuery(blockchainType: .unsupported(uid: ""), tokenType: .unsupported(type: "", reference: nil))
         }
     }

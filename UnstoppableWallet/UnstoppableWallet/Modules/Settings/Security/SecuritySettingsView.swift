@@ -10,6 +10,7 @@ struct SecuritySettingsView: View {
     @State var editPasscodePresented = false
     @State var createDuressPasscodePresented = false
     @State var editDuressPasscodePresented = false
+    @State var subscriptionPresented = false
 
     var body: some View {
         ScrollableThemeView {
@@ -42,12 +43,17 @@ struct SecuritySettingsView: View {
 
                 if viewModel.isPasscodeSet {
                     ListSection {
-                        NavigationRow(destination: {
+                        NavigationRow(spacing: .margin8, destination: {
                             AutoLockView(period: $viewModel.autoLockPeriod)
                         }) {
-                            Image("lock_24").themeIcon()
-                            Text("settings_security.auto_lock".localized).themeBody()
-                            Text(viewModel.autoLockPeriod.title).themeSubhead1(alignment: .trailing).padding(.trailing, -.margin8)
+                            HStack(spacing: .margin16) {
+                                Image("lock_24").themeIcon()
+                                Text("settings_security.auto_lock".localized).textBody()
+                            }
+
+                            Spacer()
+
+                            Text(viewModel.autoLockPeriod.title).textSubhead1()
                             Image.disclosureIcon
                         }
                     }
@@ -58,8 +64,11 @@ struct SecuritySettingsView: View {
                         ClickableRow(spacing: .margin8, action: {
                             biometryEnabledTypePresented = true
                         }) {
-                            Image(biometryType.iconName)
-                            Text(biometryType.title).themeBody()
+                            HStack(spacing: .margin16) {
+                                Image(biometryType.iconName)
+                                Text(biometryType.title).textBody()
+                            }
+
                             Spacer()
 
                             Text(viewModel.biometryEnabledType.title).textSubhead1(color: viewModel.biometryEnabledType.isEnabled ? .themeLeah : .themeGray)
@@ -102,13 +111,19 @@ struct SecuritySettingsView: View {
                 }
 
                 VStack(spacing: 0) {
+                    PremiumListSectionHeader()
+
                     ListSection {
                         if viewModel.isDuressPasscodeSet {
                             ClickableRow(action: {
+                                guard viewModel.premiumEnabled else {
+                                    subscriptionPresented = true
+                                    return
+                                }
                                 unlockReason = .changeDuressPasscode
                             }) {
                                 Image("switch_wallet_24").themeIcon(color: .themeJacob)
-                                Text("settings_security.edit_duress_passcode".localized).themeBody(color: .themeJacob)
+                                Text("settings_security.edit_duress_passcode".localized).themeBody()
                             }
 
                             ClickableRow(action: {
@@ -119,6 +134,11 @@ struct SecuritySettingsView: View {
                             }
                         } else {
                             ClickableRow(action: {
+                                guard viewModel.premiumEnabled else {
+                                    subscriptionPresented = true
+                                    return
+                                }
+
                                 if viewModel.isPasscodeSet {
                                     unlockReason = .enableDuressMode
                                 } else {
@@ -126,10 +146,11 @@ struct SecuritySettingsView: View {
                                 }
                             }) {
                                 Image("switch_wallet_24").themeIcon(color: .themeJacob)
-                                Text("settings_security.enable_duress_mode".localized).themeBody(color: .themeJacob)
+                                Text("settings_security.enable_duress_mode".localized).themeBody()
                             }
                         }
                     }
+                    .modifier(ColoredBorder())
 
                     ListSectionFooter(text: "settings_security.duress_mode.description".localized)
                 }
@@ -192,6 +213,9 @@ struct SecuritySettingsView: View {
             }
             .sheet(isPresented: $editDuressPasscodePresented) {
                 ThemeNavigationView { EditPasscodeModule.editDuressPasscodeView(showParentSheet: $editDuressPasscodePresented) }
+            }
+            .sheet(isPresented: $subscriptionPresented) {
+                PurchasesView()
             }
             .padding(EdgeInsets(top: .margin12, leading: .margin16, bottom: .margin32, trailing: .margin16))
         }

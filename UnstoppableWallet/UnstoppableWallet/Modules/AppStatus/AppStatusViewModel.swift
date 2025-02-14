@@ -7,7 +7,7 @@ class AppStatusViewModel {
 
     init(systemInfoManager: SystemInfoManager, appVersionStorage: AppVersionStorage, accountManager: AccountManager,
          walletManager: WalletManager, adapterManager: AdapterManager, logRecordManager: LogRecordManager,
-         evmBlockchainManager: EvmBlockchainManager, binanceKitManager: BinanceKitManager, marketKit: MarketKit.Kit)
+         evmBlockchainManager: EvmBlockchainManager, marketKit: MarketKit.Kit)
     {
         dateFormatter.dateFormat = "dd MMM yyyy, HH:mm"
 
@@ -69,7 +69,7 @@ class AppStatusViewModel {
             let blockchain = wallet.token.blockchain
 
             switch blockchain.type {
-            case .bitcoin, .bitcoinCash, .ecash, .litecoin, .dash, .zcash:
+            case .bitcoin, .bitcoinCash, .ecash, .litecoin, .dash, .zcash, .ton:
                 if let adapter = adapterManager.adapter(for: wallet) {
                     blockchainBlocks.append(block(blockchain: blockchain.name, statusInfo: adapter.statusInfo))
                 }
@@ -82,10 +82,6 @@ class AppStatusViewModel {
             if let evmKitWrapper = evmBlockchainManager.evmKitManager(blockchainType: blockchain.type).evmKitWrapper {
                 blockchainBlocks.append(block(blockchain: blockchain.name, statusInfo: evmKitWrapper.evmKit.statusInfo()))
             }
-        }
-
-        if let binanceKit = binanceKitManager.binanceKit {
-            blockchainBlocks.append(block(blockchain: "Binance Chain", statusInfo: binanceKit.statusInfo))
         }
 
         if !blockchainBlocks.isEmpty {

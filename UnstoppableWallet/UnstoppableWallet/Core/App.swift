@@ -51,7 +51,6 @@ class App {
 
     let currencyManager: CurrencyManager
     let networkManager: NetworkManager
-    let guidesManager: GuidesManager
     let termsManager: TermsManager
     let watchlistManager: WatchlistManager
     let contactManager: ContactBookManager
@@ -69,11 +68,11 @@ class App {
 
     let btcBlockchainManager: BtcBlockchainManager
     let evmSyncSourceManager: EvmSyncSourceManager
-    let evmAccountRestoreStateManager: EvmAccountRestoreStateManager
+    let restoreStateManager: RestoreStateManager
     let evmBlockchainManager: EvmBlockchainManager
     let evmLabelManager: EvmLabelManager
-    let binanceKitManager: BinanceKitManager
     let tronAccountManager: TronAccountManager
+    let tonKitManager: TonKitManager
 
     let restoreSettingsManager: RestoreSettingsManager
     let predefinedBlockchainService: PredefinedBlockchainService
@@ -99,6 +98,13 @@ class App {
 
     let statManager: StatManager
 
+    let tonConnectManager: TonConnectManager
+    let spamAddressManager: SpamAddressManager
+
+    let purchaseManager: PurchaseManager
+
+    let recentAddressStorage: RecentAddressStorage
+
     let kitCleaner: KitCleaner
     let appManager: AppManager
 
@@ -110,7 +116,12 @@ class App {
             .appendingPathComponent("bank.sqlite")
         let dbPool = try DatabasePool(path: databaseURL.path)
 
-        try StorageMigrator.migrate(dbPool: dbPool)
+        userDefaultsStorage = UserDefaultsStorage()
+        localStorage = LocalStorage(userDefaultsStorage: userDefaultsStorage)
+        keychainStorage = KeychainStorage(service: "io.horizontalsystems.bank.dev")
+        let sharedLocalStorage = SharedLocalStorage()
+
+        try StorageMigrator.migrate(dbPool: dbPool, localStorage: localStorage)
 
         marketKit = try MarketKit.Kit.instance(
             hsApiBaseUrl: AppConfig.marketApiUrl,
@@ -118,11 +129,6 @@ class App {
             minLogLevel: .error
         )
         marketKit.sync()
-
-        userDefaultsStorage = UserDefaultsStorage()
-        localStorage = LocalStorage(userDefaultsStorage: userDefaultsStorage)
-        keychainStorage = KeychainStorage(service: "io.horizontalsystems.bank.dev")
-        let sharedLocalStorage = SharedLocalStorage()
 
         pasteboardManager = PasteboardManager()
         reachabilityManager = ReachabilityManager()
@@ -159,7 +165,6 @@ class App {
 
         currencyManager = CurrencyManager(storage: sharedLocalStorage)
         networkManager = NetworkManager(logger: logger)
-        guidesManager = GuidesManager(networkManager: networkManager)
         termsManager = TermsManager(userDefaultsStorage: userDefaultsStorage)
 
         watchlistManager = WatchlistManager(storage: sharedLocalStorage, priceChangeModeManager: priceChangeModeManager)
@@ -194,20 +199,24 @@ class App {
         let evmSyncSourceStorage = EvmSyncSourceStorage(dbPool: dbPool)
         evmSyncSourceManager = EvmSyncSourceManager(testNetManager: testNetManager, blockchainSettingsStorage: blockchainSettingsStorage, evmSyncSourceStorage: evmSyncSourceStorage)
 
-        let evmAccountRestoreStateStorage = EvmAccountRestoreStateStorage(dbPool: dbPool)
-        evmAccountRestoreStateManager = EvmAccountRestoreStateManager(storage: evmAccountRestoreStateStorage)
+        let restoreStateStorage = RestoreStateStorage(dbPool: dbPool)
+        restoreStateManager = RestoreStateManager(storage: restoreStateStorage)
 
-        let evmAccountManagerFactory = EvmAccountManagerFactory(accountManager: accountManager, walletManager: walletManager, evmAccountRestoreStateManager: evmAccountRestoreStateManager, marketKit: marketKit)
-        evmBlockchainManager = EvmBlockchainManager(syncSourceManager: evmSyncSourceManager, testNetManager: testNetManager, marketKit: marketKit, accountManagerFactory: evmAccountManagerFactory)
+        let spamAddressStorage = try SpamAddressStorage(dbPool: dbPool)
+        spamAddressManager = SpamAddressManager(storage: spamAddressStorage, marketKit: marketKit, coinManager: coinManager)
+
+        let evmAccountManagerFactory = EvmAccountManagerFactory(accountManager: accountManager, walletManager: walletManager, restoreStateManager: restoreStateManager, marketKit: marketKit)
+        evmBlockchainManager = EvmBlockchainManager(syncSourceManager: evmSyncSourceManager, testNetManager: testNetManager, marketKit: marketKit, accountManagerFactory: evmAccountManagerFactory, spamAddressManager: spamAddressManager)
 
         let hsLabelProvider = HsLabelProvider(networkManager: networkManager)
         let evmLabelStorage = EvmLabelStorage(dbPool: dbPool)
         let syncerStateStorage = SyncerStateStorage(dbPool: dbPool)
         evmLabelManager = EvmLabelManager(provider: hsLabelProvider, storage: evmLabelStorage, syncerStateStorage: syncerStateStorage)
 
-        binanceKitManager = BinanceKitManager()
         let tronKitManager = TronKitManager(testNetManager: testNetManager)
-        tronAccountManager = TronAccountManager(accountManager: accountManager, walletManager: walletManager, marketKit: marketKit, tronKitManager: tronKitManager, evmAccountRestoreStateManager: evmAccountRestoreStateManager)
+        tronAccountManager = TronAccountManager(accountManager: accountManager, walletManager: walletManager, marketKit: marketKit, tronKitManager: tronKitManager, restoreStateManager: restoreStateManager)
+
+        tonKitManager = TonKitManager(restoreStateManager: restoreStateManager, marketKit: marketKit, walletManager: walletManager)
 
         let restoreSettingsStorage = RestoreSettingsStorage(dbPool: dbPool)
         restoreSettingsManager = RestoreSettingsManager(storage: restoreSettingsStorage)
@@ -255,18 +264,20 @@ class App {
         let adapterFactory = AdapterFactory(
             evmBlockchainManager: evmBlockchainManager,
             evmSyncSourceManager: evmSyncSourceManager,
-            binanceKitManager: binanceKitManager,
             btcBlockchainManager: btcBlockchainManager,
             tronKitManager: tronKitManager,
+            tonKitManager: tonKitManager,
             restoreSettingsManager: restoreSettingsManager,
             coinManager: coinManager,
-            evmLabelManager: evmLabelManager
+            evmLabelManager: evmLabelManager,
+            spamAddressManager: spamAddressManager
         )
         adapterManager = AdapterManager(
             adapterFactory: adapterFactory,
             walletManager: walletManager,
             evmBlockchainManager: evmBlockchainManager,
             tronKitManager: tronKitManager,
+            tonKitManager: tonKitManager,
             btcBlockchainManager: btcBlockchainManager
         )
         transactionAdapterManager = TransactionAdapterManager(
@@ -306,8 +317,15 @@ class App {
             logger: logger
         )
 
+        purchaseManager = PurchaseManager()
+
+        recentAddressStorage = try RecentAddressStorage(dbPool: dbPool)
+
         let statStorage = StatStorage(dbPool: dbPool)
-        statManager = StatManager(marketKit: marketKit, storage: statStorage, userDefaultsStorage: userDefaultsStorage)
+        statManager = StatManager(marketKit: marketKit, storage: statStorage, userDefaultsStorage: userDefaultsStorage, purchaseManager: purchaseManager)
+
+        let tonConnectStorage = try TonConnectStorage(dbPool: dbPool)
+        tonConnectManager = TonConnectManager(storage: tonConnectStorage, accountManager: accountManager)
 
         kitCleaner = KitCleaner(accountManager: accountManager)
 
@@ -329,7 +347,17 @@ class App {
             balanceHiddenManager: balanceHiddenManager,
             statManager: statManager,
             walletConnectSocketConnectionService: walletConnectSocketConnectionService,
-            nftMetadataSyncer: nftMetadataSyncer
+            nftMetadataSyncer: nftMetadataSyncer,
+            tonKitManager: tonKitManager,
+            spamAddressManager: spamAddressManager
         )
+    }
+
+    func newSendEnabled(wallet _: Wallet) -> Bool {
+        true
+        // switch wallet.token.blockchainType {
+        // case .ton: return true
+        // default: return localStorage.newSendEnabled
+        // }
     }
 }

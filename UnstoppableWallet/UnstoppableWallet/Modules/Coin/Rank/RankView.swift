@@ -59,7 +59,7 @@ struct RankView: View {
                 }
             }
             .sheet(item: $presentedCoin) { coin in
-                CoinPageViewNew(coinUid: coin.uid).ignoresSafeArea()
+                CoinPageView(coin: coin)
                     .onFirstAppear { stat(page: viewModel.type.statRankType, event: .openCoin(coinUid: coin.uid)) }
             }
         }
@@ -67,12 +67,13 @@ struct RankView: View {
 
     @ViewBuilder private func header() -> some View {
         VStack(spacing: 0) {
-            HStack(spacing: .margin32) {
+            HStack(spacing: .margin16) {
                 VStack(spacing: .margin8) {
                     Text(viewModel.type.title.localized).themeHeadline1()
-                    Text(viewModel.type.description.localized).themeSubhead2()
+                    Text(viewModel.type.description.localized).textSubhead2()
                 }
                 .padding(.vertical, .margin12)
+                .fixedSize(horizontal: false, vertical: true)
 
                 KFImage.url(URL(string: viewModel.type.imageUid.headerImageUrl))
                     .resizable()
@@ -150,7 +151,7 @@ struct RankView: View {
 
     @ViewBuilder private func loadingList() -> some View {
         Section {
-            ListForEach(Array(0 ... 10)) { index in
+            ListForEach(Array(0 ... 10)) { _ in
                 ListRow {
                     itemContent(
                         index: 1,

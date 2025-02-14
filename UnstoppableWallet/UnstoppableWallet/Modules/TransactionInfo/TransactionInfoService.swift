@@ -10,6 +10,7 @@ class TransactionInfoService {
     private let rateService: HistoricalRateService
     private let nftMetadataService: NftMetadataService
     private let balanceHiddenManager: BalanceHiddenManager
+    private let purchaseManager = App.shared.purchaseManager
 
     private var transactionRecord: TransactionRecord
     private var rates = [RateKey: CurrencyValue]()
@@ -43,20 +44,16 @@ class TransactionInfoService {
         case let tx as SwapTransactionRecord:
             tokens.append(tx.valueIn.token)
             tx.valueOut.flatMap { tokens.append($0.token) }
-
         case let tx as UnknownSwapTransactionRecord:
             tx.valueIn.flatMap { tokens.append($0.token) }
             tx.valueOut.flatMap { tokens.append($0.token) }
-
         case let tx as ApproveTransactionRecord: tokens.append(tx.value.token)
         case let tx as ContractCallTransactionRecord:
             tokens.append(contentsOf: tx.incomingEvents.map(\.value.token))
             tokens.append(contentsOf: tx.outgoingEvents.map(\.value.token))
-
         case let tx as ExternalContractCallTransactionRecord:
             tokens.append(contentsOf: tx.incomingEvents.map(\.value.token))
             tokens.append(contentsOf: tx.outgoingEvents.map(\.value.token))
-
         case let tx as TronIncomingTransactionRecord: tokens.append(tx.value.token)
         case let tx as TronOutgoingTransactionRecord: tokens.append(tx.value.token)
         case let tx as TronApproveTransactionRecord: tokens.append(tx.value.token)
@@ -66,25 +63,19 @@ class TransactionInfoService {
         case let tx as TronExternalContractCallTransactionRecord:
             tokens.append(contentsOf: tx.incomingEvents.map(\.value.token))
             tokens.append(contentsOf: tx.outgoingEvents.map(\.value.token))
-
         case let tx as BitcoinIncomingTransactionRecord: tokens.append(tx.value.token)
         case let tx as BitcoinOutgoingTransactionRecord:
             tx.fee.flatMap { tokens.append($0.token) }
             tokens.append(tx.value.token)
-
-        case let tx as BinanceChainIncomingTransactionRecord: tokens.append(tx.value.token)
-        case let tx as BinanceChainOutgoingTransactionRecord:
-            tokens.append(tx.fee.token)
-            tokens.append(tx.value.token)
-
-        case let tx as TonIncomingTransactionRecord:
-            tokens.append(tx.transfer?.value.token)
-        case let tx as TonOutgoingTransactionRecord:
-            tokens.append(tx.fee?.token)
-            tx.transfers.forEach { tokens.append($0.value.token) }
         case let tx as TonTransactionRecord:
+            for action in tx.actions {
+                switch action.type {
+                case let .send(value, _, _, _): tokens.append(value.token)
+                case let .receive(value, _, _): tokens.append(value.token)
+                default: ()
+                }
+            }
             tokens.append(tx.fee?.token)
-
         default: ()
         }
 
@@ -154,6 +145,10 @@ extension TransactionInfoService {
 
     var balanceHidden: Bool {
         balanceHiddenManager.balanceHidden
+    }
+
+    var hasActiveSubscriptions: Bool {
+        purchaseManager.hasActivePurchase
     }
 
     var item: Item {

@@ -55,16 +55,20 @@ extension BitcoinSendHandler: ISendHandler {
         )
     }
 
-    func send(data _: ISendData) async throws {
-        try adapter.send(params: params)
+    func send(data: ISendData) async throws {
+        guard let data = data as? SendData else {
+            throw SendError.invalidData
+        }
+
+        try adapter.send(params: data.params)
     }
 }
 
 extension BitcoinSendHandler {
     class SendData: BaseSendBtcData, ISendData {
         private let token: Token
-        private let params: SendParameters
         private let transactionError: Error?
+        let params: SendParameters
 
         init(token: Token, params: SendParameters, transactionError: Error?, satoshiPerByte: Int?, feeData: BitcoinFeeData?) {
             self.token = token
@@ -106,7 +110,7 @@ extension BitcoinSendHandler {
             }
 
             let decimalValue = baseToken.decimalValue(value: value)
-            let coinValue = CoinValue(kind: .token(token: baseToken), value: -decimalValue)
+            let appValue = AppValue(token: baseToken, value: -decimalValue)
             let rate = rates[baseToken.coin.uid]
 
             return [
@@ -114,7 +118,7 @@ extension BitcoinSendHandler {
                     .amount(
                         title: "send.confirmation.you_send".localized,
                         token: baseToken,
-                        coinValueType: .regular(coinValue: coinValue),
+                        appValueType: .regular(appValue: appValue),
                         currencyValue: rate.map { CurrencyValue(currency: currency, value: $0 * decimalValue) },
                         type: .neutral
                     ),
@@ -127,6 +131,12 @@ extension BitcoinSendHandler {
                 feeFields(feeToken: baseToken, currency: currency, feeTokenRate: rate),
             ]
         }
+    }
+}
+
+extension BitcoinSendHandler {
+    enum SendError: Error {
+        case invalidData
     }
 }
 

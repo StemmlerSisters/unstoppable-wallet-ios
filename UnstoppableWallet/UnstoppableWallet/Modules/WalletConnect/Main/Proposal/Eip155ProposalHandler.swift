@@ -5,6 +5,9 @@ class Eip155ProposalHandler {
     static let namespace = "eip155"
 
     static let supportedEvents = [
+        "connect",
+        "disconnect",
+        "message",
         "chainChanged",
         "accountsChanged",
     ]
@@ -37,7 +40,7 @@ class Eip155ProposalHandler {
                 continue
             }
 
-            set.items.insert(
+            set.items.append(
                 WalletConnectMainModule.BlockchainItem(
                     namespace: blockchain.namespace,
                     chainId: chainId,

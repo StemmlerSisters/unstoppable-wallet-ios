@@ -29,7 +29,7 @@ struct BitcoinFeeSettingsView: View {
                     helper.row(
                         title: "fee_settings.network_fee".localized,
                         feeValue: helper.feeAmount(feeToken: feeToken, currency: currency, feeTokenRate: feeTokenRate, loading: loading, feeData: feeData),
-                        description: .init(title: "fee_settings.network_fee".localized, description: "fee_settings.network_fee.info".localized)
+                        infoDescription: .init(title: "fee_settings.network_fee".localized, description: "fee_settings.network_fee.info".localized)
                     )
                 }
 
@@ -82,15 +82,13 @@ struct BitcoinFeeSettingsView: View {
             }
         }
         .sheet(isPresented: $feeRateInfoPresented) {
-            ThemeNavigationView {
-                InfoNewView(
-                    viewItems: [
-                        .header1(text: "send.fee_info.title".localized),
-                        .text(text: "send.fee_info.description".localized),
-                    ],
-                    isPresented: $feeRateInfoPresented
-                )
-            }
+            InfoView(
+                items: [
+                    .header1(text: "send.fee_info.title".localized),
+                    .text(text: "send.fee_info.description".localized),
+                ],
+                isPresented: $feeRateInfoPresented
+            )
         }
     }
 }

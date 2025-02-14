@@ -17,10 +17,14 @@ class MainSettingsViewController: ThemeViewController {
 
     private let tableView = SectionsTableView(style: .grouped)
 
+    private let premiumCell = MainSettingsPremiumCell()
     private let manageAccountsCell = BaseSelectableThemeCell()
     private let walletConnectCell = BaseSelectableThemeCell()
+    private let tonConnectCell = BaseSelectableThemeCell()
     private let securityCell = BaseSelectableThemeCell()
+    private let privacyCell = BaseSelectableThemeCell()
     private let appearanceCell = BaseSelectableThemeCell()
+    private let subscriptionCell = BaseSelectableThemeCell()
     private let contactBookCell = BaseSelectableThemeCell()
     private let baseCurrencyCell = BaseSelectableThemeCell()
     private let languageCell = BaseSelectableThemeCell()
@@ -54,6 +58,7 @@ class MainSettingsViewController: ThemeViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: title, style: .plain, target: nil, action: nil)
 
         tableView.registerHeaderFooter(forClass: HighlightedSubtitleHeaderFooterView.self)
+        tableView.registerCell(forClass: MainSettingsPremiumCell.self)
         tableView.sectionDataSource = self
 
         tableView.separatorStyle = .none
@@ -64,17 +69,28 @@ class MainSettingsViewController: ThemeViewController {
             maker.edges.equalToSuperview()
         }
 
+        syncPremiumCell(tryForFree: viewModel.allowFreeTrial)
+
         manageAccountsCell.set(backgroundStyle: .lawrence, isFirst: true)
         syncManageAccountCell()
 
         walletConnectCell.set(backgroundStyle: .lawrence)
         syncWalletConnectCell()
 
+        tonConnectCell.set(backgroundStyle: .lawrence)
+        syncTonConnectCell()
+
         securityCell.set(backgroundStyle: .lawrence, isFirst: true)
         syncSecurityCell()
 
+        privacyCell.set(backgroundStyle: .lawrence)
+        buildTitleValue(cell: privacyCell, image: UIImage(named: "eye_2_24"), title: "settings.privacy".localized)
+
         appearanceCell.set(backgroundStyle: .lawrence)
         buildTitleValue(cell: appearanceCell, image: UIImage(named: "brush_24"), title: "appearance.title".localized)
+
+        subscriptionCell.set(backgroundStyle: .lawrence)
+        buildTitleValue(cell: subscriptionCell, image: UIImage(named: "star_24"), title: "subscription.title".localized)
 
         contactBookCell.set(backgroundStyle: .lawrence)
         syncContactBookCell()
@@ -95,9 +111,11 @@ class MainSettingsViewController: ThemeViewController {
             stat(page: .settings, event: .open(page: .externalCompanyWebsite))
         }
 
+        subscribe(disposeBag, viewModel.allowFreeTrialSignal) { [weak self] in self?.syncPremiumCell(tryForFree: $0) }
         subscribe(disposeBag, viewModel.manageWalletsAlertDriver) { [weak self] in self?.syncManageAccountCell(alert: $0) }
         subscribe(disposeBag, viewModel.securityCenterAlertDriver) { [weak self] in self?.syncSecurityCell(alert: $0) }
         subscribe(disposeBag, viewModel.iCloudSyncAlertDriver) { [weak self] in self?.syncContactBookCell(alert: $0) }
+        subscribe(disposeBag, viewModel.showSubscriptionDriver) { [weak self] in self?.sync(showSubscriptionCell: $0) }
 
         subscribe(disposeBag, viewModel.walletConnectCountDriver) { [weak self] tuple in
             self?.syncWalletConnectCell(text: tuple?.text, highlighted: tuple?.highlighted ?? false)
@@ -116,6 +134,10 @@ class MainSettingsViewController: ThemeViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.deselectCell(withCoordinator: transitionCoordinator, animated: animated)
+    }
+
+    private func syncPremiumCell(tryForFree: Bool) {
+        premiumCell.bind(tryForFree: tryForFree)
     }
 
     private func syncManageAccountCell(alert: Bool = false) {
@@ -170,6 +192,16 @@ class MainSettingsViewController: ThemeViewController {
         )
     }
 
+    private func syncTonConnectCell(text: String? = nil, highlighted: Bool = false) {
+        buildTitleValue(
+            cell: tonConnectCell,
+            image: UIImage(named: "ton_connect_24"),
+            title: "TON Connect",
+            value: !highlighted ? text : nil,
+            badge: highlighted ? text : nil
+        )
+    }
+
     private func syncBaseCurrency(value: String? = nil) {
         buildTitleValue(cell: baseCurrencyCell, image: UIImage(named: "usd_24"), title: "settings.base_currency".localized, value: value)
     }
@@ -211,6 +243,19 @@ class MainSettingsViewController: ThemeViewController {
         stat(page: .settings, event: .open(page: .donate))
     }
 
+    private func onTokenTapped() {
+        UrlManager.open(url: "https://t.me/\(AppConfig.appTokenTelegramAccount)")
+    }
+
+    private func sync(showSubscriptionCell _: Bool) {
+        tableView.reload()
+    }
+
+    private func onSubscriptionTapped() {
+        let viewController = PurchaseListView().toViewController(title: "subscription.title".localized)
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+
     private var accountRows: [RowProtocol] {
         [
             StaticRow(
@@ -244,6 +289,15 @@ class MainSettingsViewController: ThemeViewController {
                     self?.viewModel.onTapWalletConnect()
                 }
             ),
+            StaticRow(
+                cell: tonConnectCell,
+                id: "ton-connect",
+                height: .heightCell48,
+                autoDeselect: true,
+                action: { [weak self] in
+                    self?.onTapTonConnect()
+                }
+            ),
             tableView.universalRow48(
                 id: "backup-manager",
                 image: .local(UIImage(named: "icloud_24")),
@@ -275,6 +329,17 @@ class MainSettingsViewController: ThemeViewController {
                 }
             ),
             StaticRow(
+                cell: privacyCell,
+                id: "privacy",
+                height: .heightCell48,
+                action: { [weak self] in
+                    let viewController = PrivacyPolicyView(config: .privacy).toViewController(title: "settings.privacy".localized)
+
+                    self?.navigationController?.pushViewController(viewController, animated: true)
+                    stat(page: .settings, event: .open(page: .privacy))
+                }
+            ),
+            StaticRow(
                 cell: contactBookCell,
                 id: "address-book",
                 height: .heightCell48,
@@ -296,6 +361,15 @@ class MainSettingsViewController: ThemeViewController {
                     self?.navigationController?.pushViewController(viewController, animated: true)
 
                     stat(page: .settings, event: .open(page: .appearance))
+                }
+            ),
+            StaticRow(
+                cell: subscriptionCell,
+                id: "subscription",
+                height: .heightCell48,
+                autoDeselect: true,
+                action: { [weak self] in
+                    self?.onSubscriptionTapped()
                 }
             ),
             StaticRow(
@@ -337,15 +411,47 @@ class MainSettingsViewController: ThemeViewController {
                 }
             ),
             tableView.universalRow48(
-                id: "academy",
+                id: "education",
                 image: .local(UIImage(named: "academy_1_24")),
-                title: .body("guides.title".localized),
+                title: .body("education.title".localized),
                 accessoryType: .disclosure,
                 isLast: true,
                 action: { [weak self] in
-                    self?.navigationController?.pushViewController(GuidesModule.instance(), animated: true)
+                    self?.navigationController?.pushViewController(EducationView().toViewController(title: "education.title".localized), animated: true)
 
-                    stat(page: .settings, event: .open(page: .academy))
+                    stat(page: .settings, event: .open(page: .education))
+                }
+            ),
+        ]
+    }
+
+    private func openVipSupport() {
+        guard viewModel.activated(.vipSupport) else {
+            present(PurchasesView().toViewController(), animated: true)
+            return
+        }
+
+        let viewController = SupportView { telegramUrl in
+            UrlManager.open(url: telegramUrl)
+        }.toViewController().toBottomSheet
+
+        present(viewController, animated: true)
+        stat(page: .settings, event: .open(page: .vipSupport))
+    }
+
+    private var premiumSupportRows: [RowProtocol] {
+        [
+            tableView.universalRow48(
+                id: "support",
+                image: .local(UIImage(named: "support_2_24")?.withTintColor(.themeJacob)),
+                title: .body("purchases.vip_support".localized),
+                accessoryType: .disclosure,
+                backgroundStyle: .borderedLawrence(.themeJacob),
+                autoDeselect: true,
+                isFirst: true,
+                isLast: true,
+                action: { [weak self] in
+                    self?.openVipSupport()
                 }
             ),
         ]
@@ -355,7 +461,7 @@ class MainSettingsViewController: ThemeViewController {
         [
             tableView.universalRow48(
                 id: "telegram",
-                image: .local(UIImage(named: "filled_telegram_24")?.withTintColor(.themeJacob)),
+                image: .local(UIImage(named: "filled_telegram_24")),
                 title: .body("Telegram"),
                 accessoryType: .disclosure,
                 autoDeselect: true,
@@ -368,7 +474,7 @@ class MainSettingsViewController: ThemeViewController {
             ),
             tableView.universalRow48(
                 id: "twitter",
-                image: .local(UIImage(named: "filled_twitter_24")?.withTintColor(.themeJacob)),
+                image: .local(UIImage(named: "filled_twitter_24")),
                 title: .body("Twitter"),
                 accessoryType: .disclosure,
                 autoDeselect: true,
@@ -422,17 +528,6 @@ class MainSettingsViewController: ThemeViewController {
                     self?.openTellFriends()
                 }
             ),
-            tableView.universalRow48(
-                id: "contact-us",
-                image: .local(UIImage(named: "mail_24")),
-                title: .body("settings.contact_us".localized),
-                accessoryType: .disclosure,
-                autoDeselect: true,
-                isLast: true,
-                action: { [weak self] in
-                    self?.handleContact()
-                }
-            ),
         ]
     }
 
@@ -440,7 +535,7 @@ class MainSettingsViewController: ThemeViewController {
         [
             tableView.universalRow48(
                 id: "donate",
-                image: .local(UIImage(named: "heart_fill_24")?.withTintColor(.themeJacob)),
+                image: .local(UIImage(named: "heart_24")?.withTintColor(.themeGray)),
                 title: .body("settings.donate.title".localized),
                 accessoryType: .disclosure,
                 autoDeselect: true,
@@ -448,6 +543,36 @@ class MainSettingsViewController: ThemeViewController {
                 isLast: true,
                 action: { [weak self] in
                     self?.onDonateTapped()
+                }
+            ),
+        ]
+    }
+
+    private var premiumRows: [RowProtocol] {
+        [
+            StaticRow(
+                cell: premiumCell,
+                id: "premium",
+                height: MainSettingsPremiumCell.height,
+                action: { [weak self] in
+                    self?.present(PurchasesView().toViewController(), animated: true)
+                }
+            ),
+        ]
+    }
+
+    private var tokenRows: [RowProtocol] {
+        [
+            tableView.universalRow48(
+                id: "token",
+                image: .local(UIImage(named: "uwt_24")?.withTintColor(.themeJacob)),
+                title: .body("settings.get_your_tokens".localized),
+                accessoryType: .disclosure,
+                autoDeselect: true,
+                isFirst: true,
+                isLast: true,
+                action: { [weak self] in
+                    self?.onTokenTapped()
                 }
             ),
         ]
@@ -480,69 +605,45 @@ class MainSettingsViewController: ThemeViewController {
         stat(page: .settings, event: .open(page: .tellFriends))
     }
 
-    private func handleEmailContact() {
-        let email = AppConfig.reportEmail
-
-        if MFMailComposeViewController.canSendMail() {
-            let controller = MFMailComposeViewController()
-            controller.setToRecipients([email])
-            controller.mailComposeDelegate = self
-
-            present(controller, animated: true)
-        } else {
-            CopyHelper.copyAndNotify(value: email)
-        }
-    }
-
-    private func handleTelegramContact() {
-        navigationController?.pushViewController(PersonalSupportModule.viewController(), animated: true)
-    }
-
-    private func handleContact() {
-        let viewController = BottomSheetModule.viewController(
-            image: .local(name: "at_24", tint: .warning),
-            title: "settings.contact.title".localized,
-            items: [],
-            buttons: [
-                .init(style: .yellow, title: "settings.contact.via_email".localized, actionType: .afterClose) { [weak self] in
-                    self?.handleEmailContact()
-                },
-                .init(style: .gray, title: "settings.contact.via_telegram".localized, actionType: .afterClose) { [weak self] in
-                    self?.handleTelegramContact()
-                },
-            ]
-        )
-
-        present(viewController, animated: true)
-
-        stat(page: .settings, event: .open(page: .contactUs))
+    private func onTapTonConnect() {
+        navigationController?.pushViewController(TonConnectListView().toViewController(title: "TON Connect"), animated: true)
     }
 }
 
 extension MainSettingsViewController: SectionsDataSource {
     func buildSections() -> [SectionProtocol] {
         var sections: [SectionProtocol] = [
-            Section(id: "account", headerState: .margin(height: AppConfig.donateEnabled ? .margin32 : .margin12), rows: accountRows),
-            Section(id: "appearance_settings", headerState: .margin(height: .margin32), footerState: .margin(height: .margin24), rows: appearanceRows),
+            Section(id: "token", headerState: .margin(height: .margin32), rows: tokenRows),
+            Section(id: "account", headerState: .margin(height: .margin32), rows: accountRows),
+            Section(id: "appearance_settings", headerState: .margin(height: .margin32), rows: appearanceRows),
+            Section(
+                id: "premium",
+                headerState: .static(view: PremiumHeaderFooterView(), height: .margin32 + .margin24),
+                rows: premiumSupportRows
+            ),
+            Section(id: "about", headerState: .margin(height: .margin32), footerState: .margin(height: .margin32), rows: aboutRows),
             Section(
                 id: "social",
                 headerState: .cellType(
                     hash: "settings.social_networks.label".localized,
                     binder: { (view: HighlightedSubtitleHeaderFooterView) in
-                        view.bind(text: "settings.social_networks.label".localized, color: .themeJacob, backgroundColor: UIColor.clear)
+                        view.bind(text: "settings.social_networks.label".localized, color: .themeGray, backgroundColor: UIColor.clear)
                     },
                     dynamicHeight: { _ in .margin32 }
                 ),
-                footerState: tableView.sectionFooter(text: "settings.social_networks.footer".localized, topMargin: .margin12, bottomMargin: .zero),
                 rows: socialRows
             ),
             Section(id: "knowledge", headerState: .margin(height: .margin32), rows: knowledgeRows),
-            Section(id: "about", headerState: .margin(height: .margin32), rows: aboutRows),
-            Section(id: "footer", headerState: .margin(height: .margin32), footerState: .margin(height: .margin32), rows: footerRows),
         ]
 
         if AppConfig.donateEnabled {
-            sections.insert(Section(id: "donate", headerState: .margin(height: .margin12), rows: donateRows), at: 0)
+            sections.append(Section(id: "donate", headerState: .margin(height: .margin32), rows: donateRows))
+        }
+
+        sections.append(Section(id: "footer", headerState: .margin(height: .margin32), footerState: .margin(height: .margin32), rows: footerRows))
+
+        if !viewModel.hasActiveSubscriptions {
+            sections.insert(Section(id: "premium", headerState: .margin(height: .margin12), rows: premiumRows), at: 0)
         }
 
         if showTestNetSwitcher {
@@ -614,6 +715,50 @@ class HighlightedSubtitleHeaderFooterView: UITableViewHeaderFooterView {
     func bind(text: String?, color: UIColor = .clear, backgroundColor: UIColor = .clear) {
         label.text = text?.uppercased()
         label.textColor = color
+        backgroundView?.backgroundColor = backgroundColor
+    }
+}
+
+class PremiumHeaderFooterView: UITableViewHeaderFooterView {
+    private let iconView = UIImageView()
+    private let label = UILabel()
+
+    override public init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
+
+        backgroundView = UIView()
+
+        addSubview(iconView)
+        iconView.snp.makeConstraints { maker in
+            maker.leading.equalToSuperview().inset(CGFloat.margin32)
+            maker.bottom.equalToSuperview().inset(9)
+            maker.size.equalTo(CGFloat.iconSize16)
+        }
+
+        addSubview(label)
+        label.snp.makeConstraints { maker in
+            maker.leading.equalTo(iconView.snp.trailing).offset(CGFloat.margin6)
+            maker.trailing.equalToSuperview().inset(CGFloat.margin32)
+            maker.bottom.equalToSuperview().inset(9)
+        }
+
+        label.font = .subhead1
+
+        bind()
+    }
+
+    @available(*, unavailable)
+    public required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(iconName: String = "star_filled_16", text: String? = "subscription.premium.label".localized, color: UIColor = .themeJacob, backgroundColor: UIColor = .clear) {
+        label.text = text
+        label.textColor = color
+
+        iconView.image = UIImage(named: iconName)?.withRenderingMode(.alwaysTemplate)
+        iconView.tintColor = color
+
         backgroundView?.backgroundColor = backgroundColor
     }
 }

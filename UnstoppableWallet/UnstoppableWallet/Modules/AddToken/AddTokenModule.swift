@@ -23,15 +23,6 @@ enum AddTokenModule {
             }
         }
 
-        if let blockchain = try? App.shared.marketKit.blockchain(uid: BlockchainType.binanceChain.uid), blockchain.type.supports(accountType: account.type) {
-            let service: IAddTokenBlockchainService = AddBep2TokenBlockchainService(
-                blockchain: blockchain,
-                networkManager: App.shared.networkManager
-            )
-            let item = Item(blockchain: blockchain, service: service)
-            items.append(item)
-        }
-
         if let blockchain = try? App.shared.marketKit.blockchain(uid: BlockchainType.tron.uid), blockchain.type.supports(accountType: account.type) {
             let service: IAddTokenBlockchainService = AddTronTokenBlockchainService(
                 blockchain: blockchain,
@@ -39,6 +30,12 @@ enum AddTokenModule {
                 network: App.shared.testNetManager.testNetEnabled ? .nileTestnet : .mainNet
             )
 
+            let item = Item(blockchain: blockchain, service: service)
+            items.append(item)
+        }
+
+        if let blockchain = try? App.shared.marketKit.blockchain(uid: BlockchainType.ton.uid), blockchain.type.supports(accountType: account.type) {
+            let service: IAddTokenBlockchainService = AddJettonBlockchainService(blockchain: blockchain)
             let item = Item(blockchain: blockchain, service: service)
             items.append(item)
         }

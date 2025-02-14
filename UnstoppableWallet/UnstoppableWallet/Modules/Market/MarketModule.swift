@@ -37,16 +37,33 @@ enum MarketModule {
     }
 
     enum Top: Int, CaseIterable, Identifiable {
+        static let `default` = Top.top100
+
         case top100 = 100
         case top200 = 200
-        case top250 = 250
         case top300 = 300
         case top500 = 500
         case top1000 = 1000
         case top1500 = 1500
+        case top2000 = 2000
+        case top2500 = 2500
 
         var title: String {
             "market.top_coins".localized("\(rawValue)")
+        }
+
+        var description: String {
+            let result = "market.advanced_search.top.m_cap".localized + " "
+            switch self {
+            case .top100: return result + "market.advanced_search.top.more_1_b".localized
+            case .top200: return result + "market.advanced_search.top.more_500_m".localized
+            case .top300: return result + "market.advanced_search.top.more_250_m".localized
+            case .top500: return result + "market.advanced_search.top.more_100_m".localized
+            case .top1000: return result + "market.advanced_search.top.more_25_m".localized
+            case .top1500: return result + "market.advanced_search.top.more_10_m".localized
+            case .top2000: return result + "market.advanced_search.top.more_5_m".localized
+            case .top2500: return result + "market.advanced_search.top.more_1_m".localized
+            }
         }
 
         var id: Int {
@@ -60,7 +77,7 @@ enum MarketModule {
         case news
         case platforms
         case pairs
-        // case sectors
+        case sectors
 
         var title: String {
             switch self {
@@ -69,7 +86,7 @@ enum MarketModule {
             case .news: return "market.tab.news".localized
             case .platforms: return "market.tab.platforms".localized
             case .pairs: return "market.tab.pairs".localized
-                // case .sectors: return "market.tab.sectors".localized
+            case .sectors: return "market.tab.sectors".localized
             }
         }
     }

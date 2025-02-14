@@ -7,7 +7,7 @@ struct MarketSearchView: View {
     @ObservedObject var viewModel: MarketSearchViewModel
     @ObservedObject var watchlistViewModel: WatchlistViewModel
 
-    @State private var presentedFullCoin: FullCoin?
+    @State private var presentedCoin: Coin?
 
     var body: some View {
         ThemeView {
@@ -40,8 +40,8 @@ struct MarketSearchView: View {
                 }
             }
         }
-        .sheet(item: $presentedFullCoin) { fullCoin in
-            CoinPageViewNew(coinUid: fullCoin.coin.uid).ignoresSafeArea()
+        .sheet(item: $presentedCoin) { coin in
+            CoinPageView(coin: coin)
         }
     }
 
@@ -50,7 +50,7 @@ struct MarketSearchView: View {
 
         ClickableRow(action: {
             viewModel.handleOpen(coinUid: coin.uid)
-            presentedFullCoin = fullCoin
+            presentedCoin = coin
         }) {
             CoinIconView(coin: coin)
 
@@ -58,7 +58,12 @@ struct MarketSearchView: View {
                 Text(coin.code).themeBody()
                 Text(coin.name).themeSubhead2()
             }
+
+            Spacer()
+
+            WatchlistView.watchButton(viewModel: watchlistViewModel, coinUid: coin.uid)
+                .contentShape(Rectangle())
+                .onTapGesture {}
         }
-        .watchlistSwipeActions(viewModel: watchlistViewModel, coinUid: coin.uid)
     }
 }

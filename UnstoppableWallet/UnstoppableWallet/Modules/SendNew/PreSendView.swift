@@ -5,18 +5,21 @@ import ThemeKit
 
 struct PreSendView: View {
     @StateObject var viewModel: PreSendViewModel
-    private let showIcon: Bool
-    private let onDismiss: (() -> Void)?
+    private let addressVisible: Bool
+    private let onDismiss: () -> Void
 
     @Environment(\.presentationMode) private var presentationMode
     @FocusState private var focusField: FocusField?
 
     @State private var settingsPresented = false
     @State private var confirmPresented = false
+    @State private var addressSecurityIssueType: AddressSecurityIssueType?
 
-    init(wallet: Wallet, mode: PreSendViewModel.Mode = .regular, showIcon: Bool = false, onDismiss: (() -> Void)? = nil) {
-        _viewModel = StateObject(wrappedValue: PreSendViewModel(wallet: wallet, mode: mode))
-        self.showIcon = showIcon
+    @State private var issueTypes = [AddressSecurityIssueType]()
+
+    init(wallet: Wallet, resolvedAddress: ResolvedAddress, amount: Decimal? = nil, addressVisible: Bool = true, onDismiss: @escaping () -> Void) {
+        _viewModel = StateObject(wrappedValue: PreSendViewModel(wallet: wallet, resolvedAddress: resolvedAddress, amount: amount))
+        self.addressVisible = addressVisible
         self.onDismiss = onDismiss
     }
 
@@ -24,13 +27,18 @@ struct PreSendView: View {
         ThemeView {
             ScrollView {
                 VStack(spacing: .margin16) {
+                    if addressVisible {
+                        if viewModel.resolvedAddress.issueTypes.isEmpty {
+                            addressView()
+                        } else {
+                            addressView()
+                                .overlay(RoundedRectangle(cornerRadius: .cornerRadius12, style: .continuous).stroke(Color.themeRed50, lineWidth: .heightOneDp))
+                        }
+                    }
+
                     VStack(spacing: .margin8) {
                         inputView()
                         availableBalanceView(value: balanceValue())
-                    }
-
-                    if viewModel.addressVisible {
-                        addressView()
                     }
 
                     if viewModel.hasMemo {
@@ -51,15 +59,11 @@ struct PreSendView: View {
                 isActive: $confirmPresented,
                 destination: {
                     if let sendData = viewModel.sendData {
-                        RegularSendView(sendData: sendData) {
+                        RegularSendView(sendData: sendData.sendData, address: sendData.address) {
                             HudHelper.instance.show(banner: .sent)
-
-                            if let onDismiss {
-                                onDismiss()
-                            } else {
-                                presentationMode.wrappedValue.dismiss()
-                            }
+                            onDismiss()
                         }
+                        .toolbarRole(.editor)
                     }
                 }
             ) {
@@ -69,12 +73,6 @@ struct PreSendView: View {
         .navigationTitle("Send \(viewModel.token.coin.code)")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                if showIcon {
-                    CoinIconView(coin: viewModel.token.coin)
-                }
-            }
-
             ToolbarItem(placement: .navigationBarTrailing) {
                 if let handler = viewModel.handler, handler.hasSettings {
                     Button(action: {
@@ -93,6 +91,23 @@ struct PreSendView: View {
                     viewModel.syncSendData()
                 }
             }
+        }
+        .bottomSheet(item: $addressSecurityIssueType) { issueType in
+            BottomSheetView(
+                icon: .local(name: "warning_2_24", tint: .themeLucian),
+                title: issueType.preSendTitle,
+                items: [
+                    .highlightedDescription(text: issueType.preSendDescription),
+                ],
+                buttons: [
+                    .init(style: .red, title: "send.send_anyway".localized) {
+                        addressSecurityIssueType = nil
+                        handleNext()
+                    },
+                    .init(style: .transparent, title: "button.cancel".localized) { addressSecurityIssueType = nil },
+                ],
+                onDismiss: { addressSecurityIssueType = nil }
+            )
         }
         .accentColor(.themeJacob)
     }
@@ -195,14 +210,25 @@ struct PreSendView: View {
     }
 
     @ViewBuilder private func addressView() -> some View {
-        AddressViewNew(
-            initial: .init(
-                blockchainType: viewModel.token.blockchainType,
-                showContacts: true
-            ),
-            text: $viewModel.address,
-            result: $viewModel.addressResult
-        )
+        ListSection {
+            ClickableRow {
+                presentationMode.wrappedValue.dismiss()
+            } content: {
+                Text("send.confirmation.to".localized).textSubhead2()
+
+                Text(viewModel.resolvedAddress.address)
+                    .textSubhead2(color: .themeLeah)
+                    .multilineTextAlignment(.leading)
+
+                Spacer()
+
+                if !viewModel.resolvedAddress.issueTypes.isEmpty {
+                    Image.warningIcon
+                }
+
+                Image("arrow_small_down_20").themeIcon()
+            }
+        }
     }
 
     @ViewBuilder private func memoView() -> some View {
@@ -220,7 +246,8 @@ struct PreSendView: View {
         let (title, disabled, showProgress) = buttonState()
 
         Button(action: {
-            confirmPresented = true
+            issueTypes = viewModel.resolvedAddress.issueTypes
+            handleNext()
         }) {
             HStack(spacing: .margin8) {
                 if showProgress {
@@ -244,12 +271,20 @@ struct PreSendView: View {
         }
     }
 
+    private func handleNext() {
+        if let issueType = issueTypes.popLast() {
+            addressSecurityIssueType = issueType
+        } else {
+            confirmPresented = true
+        }
+    }
+
     private func balanceValue() -> String? {
         guard let availableBalance = viewModel.availableBalance else {
             return nil
         }
 
-        return ValueFormatter.instance.formatFull(coinValue: CoinValue(kind: .token(token: viewModel.token), value: availableBalance))
+        return AppValue(token: viewModel.token, value: availableBalance).formattedFull()
     }
 
     private func buttonState() -> (String, Bool, Bool) {
@@ -268,10 +303,6 @@ struct PreSendView: View {
             title = "send.enter_amount".localized
         } else if let availableBalance = viewModel.availableBalance, let amount = viewModel.amount, amount > availableBalance {
             title = "send.insufficient_balance".localized
-        } else if case .empty = viewModel.addressState {
-            title = "send.enter_address".localized
-        } else if case .invalid = viewModel.addressState {
-            title = "send.invalid_address".localized
         } else {
             title = "send.next_button".localized
             disabled = viewModel.sendData == nil

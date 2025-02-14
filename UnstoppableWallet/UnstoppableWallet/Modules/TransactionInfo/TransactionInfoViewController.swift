@@ -1,4 +1,5 @@
 import ComponentKit
+import MarketKit
 import RxSwift
 import SafariServices
 import SectionsTableView
@@ -81,6 +82,11 @@ class TransactionInfoViewController: ThemeViewController {
     }
 
     private func openResend(type: ResendTransactionType) {
+        guard viewModel.hasSubscription else {
+            present(PurchasesView().toViewController(), animated: true)
+            return
+        }
+
         do {
             if let evmAdapter = adapter as? BaseEvmAdapter {
                 let viewController = try SendEvmConfirmationModule.resendViewController(adapter: adapter, type: type, transactionHash: viewModel.transactionHash)
@@ -98,14 +104,11 @@ class TransactionInfoViewController: ThemeViewController {
         }
     }
 
-    private func openCoin(coinUid: String) {
-        guard let module = CoinPageModule.viewController(coinUid: coinUid) else {
-            return
-        }
+    private func open(coin: Coin) {
+        let viewController = CoinPageView(coin: coin).toViewController()
+        present(viewController, animated: true)
 
-        present(module, animated: true)
-
-        stat(page: .transactionInfo, event: .openCoin(coinUid: coinUid))
+        stat(page: .transactionInfo, event: .openCoin(coinUid: coin.uid))
     }
 
     private func openNftAsset(providerCollectionUid: String, nftUid: NftUid) {
@@ -196,14 +199,14 @@ class TransactionInfoViewController: ThemeViewController {
         return CellBuilderNew.row(
             rootElement: .hStack([
                 .imageElement(image: .local(image?.withTintColor(color)), size: .image24),
-                .textElement(text: .body(title, color: color)),
+                .textElement(text: .body(title)),
             ]),
             tableView: tableView,
             id: "option-\(rowInfo.index)",
             height: .heightCell48,
             autoDeselect: true,
             bind: { cell in
-                cell.set(backgroundStyle: .lawrence, isFirst: rowInfo.isFirst, isLast: rowInfo.isLast)
+                cell.set(backgroundStyle: .borderedLawrence(.themeJacob), isFirst: rowInfo.isFirst, isLast: rowInfo.isLast)
             },
             action: action
         )
@@ -485,16 +488,16 @@ class TransactionInfoViewController: ThemeViewController {
         switch viewItem {
         case let .actionTitle(iconName, iconDimmed, title, subTitle):
             return CellComponent.actionTitleRow(tableView: tableView, rowInfo: rowInfo, iconName: iconName, iconDimmed: iconDimmed, title: title, value: subTitle ?? "")
-        case let .amount(title, subtitle, iconUrl, iconPlaceholderImageName, coinAmount, currencyAmount, type, coinUid):
+        case let .amount(title, subtitle, iconUrl, iconAlternativeUrl, iconPlaceholderImageName, coinAmount, currencyAmount, type, coin):
             var action: (() -> Void)?
 
-            if let coinUid {
+            if let coin {
                 action = { [weak self] in
-                    self?.openCoin(coinUid: coinUid)
+                    self?.open(coin: coin)
                 }
             }
 
-            return CellComponent.amountRow(tableView: tableView, rowInfo: rowInfo, title: title, subtitle: subtitle, imageUrl: iconUrl, placeholderImageName: iconPlaceholderImageName, coinAmount: coinAmount, currencyAmount: currencyAmount, type: type, action: action)
+            return CellComponent.amountRow(tableView: tableView, rowInfo: rowInfo, title: title, subtitle: subtitle, imageUrl: iconUrl, alternativeImageUrl: iconAlternativeUrl, placeholderImageName: iconPlaceholderImageName, coinAmount: coinAmount, currencyAmount: currencyAmount, type: type, action: action)
         case let .nftAmount(iconUrl, iconPlaceholderImageName, nftAmount, type, providerCollectionUid, nftUid):
             var onTapOpenNft: (() -> Void)?
 
@@ -559,9 +562,19 @@ extension TransactionInfoViewController: SectionsDataSource {
                 footerState = .margin(height: index == viewItems.count - 1 ? .margin32 : 0)
             }
 
+            let headerState: ViewState<UITableViewHeaderFooterView>
+            if let header = sectionViewItem.header {
+                switch header {
+                case .premium:
+                    headerState = .static(view: PremiumHeaderFooterView(), height: .margin48)
+                }
+            } else {
+                headerState = .margin(height: .margin12)
+            }
+
             return Section(
                 id: "section_\(index)",
-                headerState: .margin(height: .margin12),
+                headerState: headerState,
                 footerState: footerState,
                 rows: sectionViewItem.viewItems.enumerated().map { index, viewItem in
                     row(viewItem: viewItem, rowInfo: RowInfo(index: index, isFirst: index == 0, isLast: index == sectionViewItem.viewItems.count - 1))

@@ -13,9 +13,9 @@ class EvmTransactionsAdapter: BaseEvmAdapter {
     private let evmTransactionSource: EvmKit.TransactionSource
     private let transactionConverter: EvmTransactionConverter
 
-    init(evmKitWrapper: EvmKitWrapper, source: TransactionSource, baseToken: MarketKit.Token, evmTransactionSource: EvmKit.TransactionSource, coinManager: CoinManager, evmLabelManager: EvmLabelManager) {
+    init(evmKitWrapper: EvmKitWrapper, source: TransactionSource, baseToken: MarketKit.Token, evmTransactionSource: EvmKit.TransactionSource, coinManager: CoinManager, evmLabelManager: EvmLabelManager, spamAddressManager: SpamAddressManager) {
         self.evmTransactionSource = evmTransactionSource
-        transactionConverter = EvmTransactionConverter(source: source, baseToken: baseToken, coinManager: coinManager, evmKitWrapper: evmKitWrapper, evmLabelManager: evmLabelManager)
+        transactionConverter = EvmTransactionConverter(source: source, baseToken: baseToken, coinManager: coinManager, blockchainType: evmKitWrapper.blockchainType, userAddress: evmKitWrapper.evmKit.address, evmLabelManager: evmLabelManager, spamAddressManager: spamAddressManager)
 
         super.init(evmKitWrapper: evmKitWrapper, decimals: EvmAdapter.decimals)
     }
@@ -97,7 +97,7 @@ extension EvmTransactionsAdapter: ITransactionsAdapter {
     }
 
     func transactionsSingle(from: TransactionRecord?, token: MarketKit.Token?, filter: TransactionTypeFilter, address: String?, limit: Int) -> Single<[TransactionRecord]> {
-        evmKit.transactionsSingle(tagQueries: [tagQuery(token: token, filter: filter, address: address?.lowercased())], fromHash: from.flatMap { Data(hex: $0.transactionHash) }, limit: limit)
+        evmKit.transactionsSingle(tagQueries: [tagQuery(token: token, filter: filter, address: address?.lowercased())], fromHash: from.flatMap(\.transactionHash.hs.hexData), limit: limit)
             .map { [weak self] transactions -> [TransactionRecord] in
                 transactions.compactMap { self?.transactionConverter.transactionRecord(fromTransaction: $0) }
             }

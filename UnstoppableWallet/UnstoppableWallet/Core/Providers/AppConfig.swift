@@ -15,9 +15,11 @@ enum AppConfig {
     static let appGitHubRepository = "unstoppable-wallet-ios"
     static let appTwitterAccount = "unstoppablebyhs"
     static let appTelegramAccount = "unstoppable_announcements"
+    static let appTokenTelegramAccount = "BeUnstoppable_bot"
     static let mempoolSpaceUrl = "https://mempool.space"
     static let guidesIndexUrl = URL(string: "https://raw.githubusercontent.com/horizontalsystems/blockchain-crypto-guides/v1.2/index.json")!
     static let faqIndexUrl = URL(string: "https://raw.githubusercontent.com/horizontalsystems/unstoppable-wallet-website/master/src/faq.json")!
+    static let eduIndexUrl = URL(string: "https://raw.githubusercontent.com/horizontalsystems/Unstoppable-Wallet-Website/refs/tags/v1.4/src/edu.json")!
     static let donationAddresses: [BlockchainType: String] = [
         .bitcoin: "bc1qxt5u5swx3sk6y2923whr4tvjreza43g37czv67",
         .bitcoinCash: "bitcoincash:qz6sy9fq66yvfl5mvpfv3v2nqw5pervvkc425nj9g0\n",
@@ -27,16 +29,24 @@ enum AppConfig {
         .zcash: "zs1jpd8u7zghtq5eg48l384y6fpy7cr0xmqehnw5mujpm8v2u7jr9a3j7luftqpthf6a8f720vdfyn",
         .ethereum: "0xA24c159C7f1E4A04dab7c364C2A8b87b3dBa4cd1",
         .binanceSmartChain: "0xA24c159C7f1E4A04dab7c364C2A8b87b3dBa4cd1",
-        .binanceChain: "bnb1m0ys77zwg74733f5wwyzhjme2xrdq4ee84smf4",
         .polygon: "0xA24c159C7f1E4A04dab7c364C2A8b87b3dBa4cd1",
         .avalanche: "0xA24c159C7f1E4A04dab7c364C2A8b87b3dBa4cd1",
         .optimism: "0xA24c159C7f1E4A04dab7c364C2A8b87b3dBa4cd1",
+        .base: "0xA24c159C7f1E4A04dab7c364C2A8b87b3dBa4cd1",
         .arbitrumOne: "0xA24c159C7f1E4A04dab7c364C2A8b87b3dBa4cd1",
         .gnosis: "0xA24c159C7f1E4A04dab7c364C2A8b87b3dBa4cd1",
         .fantom: "0xA24c159C7f1E4A04dab7c364C2A8b87b3dBa4cd1",
         .ton: "UQAYLATDlfKgn3cKZAgznvowhXzpqgxrIicesxJfo9f6PN3k",
         .tron: "TQzANCd363w5CjRWDtswm8Y5nFPAdnwekF",
         .solana: "5gattKnvu5f1NDHBuZ6VfDXjRrJa9UcAArkZ3ys3e82F",
+    ]
+    static var spamCoinValueLimits: [String: Decimal] = [
+        "tether": 0.01,
+        "usd-coin": 0.01,
+        "dai": 0.01,
+        "binance-usd": 0.01,
+        "binance-peg-busd": 0.01,
+        "stasis-eurs": 0.01,
     ]
 
     static var appVersion: String {
@@ -63,36 +73,40 @@ enum AppConfig {
         Bundle.main.object(forInfoDictionaryKey: "OfficeMode") as? String == "true"
     }
 
-    static var etherscanKey: String {
-        (Bundle.main.object(forInfoDictionaryKey: "EtherscanApiKey") as? String) ?? ""
+    static var etherscanKeys: [String] {
+        ((Bundle.main.object(forInfoDictionaryKey: "EtherscanApiKeys") as? String) ?? "").components(separatedBy: ",")
     }
 
-    static var arbiscanKey: String {
-        (Bundle.main.object(forInfoDictionaryKey: "ArbiscanApiKey") as? String) ?? ""
+    static var arbiscanKeys: [String] {
+        ((Bundle.main.object(forInfoDictionaryKey: "ArbiscanApiKeys") as? String) ?? "").components(separatedBy: ",")
     }
 
-    static var gnosisscanKey: String {
-        (Bundle.main.object(forInfoDictionaryKey: "GnosisscanApiKey") as? String) ?? ""
+    static var gnosisscanKeys: [String] {
+        ((Bundle.main.object(forInfoDictionaryKey: "GnosisscanApiKeys") as? String) ?? "").components(separatedBy: ",")
     }
 
-    static var ftmscanKey: String {
-        (Bundle.main.object(forInfoDictionaryKey: "FtmscanApiKey") as? String) ?? ""
+    static var ftmscanKeys: [String] {
+        ((Bundle.main.object(forInfoDictionaryKey: "FtmscanApiKeys") as? String) ?? "").components(separatedBy: ",")
     }
 
-    static var optimismEtherscanKey: String {
-        (Bundle.main.object(forInfoDictionaryKey: "OptimismEtherscanApiKey") as? String) ?? ""
+    static var optimismEtherscanKeys: [String] {
+        ((Bundle.main.object(forInfoDictionaryKey: "OptimismEtherscanApiKeys") as? String) ?? "").components(separatedBy: ",")
     }
 
-    static var bscscanKey: String {
-        (Bundle.main.object(forInfoDictionaryKey: "BscscanApiKey") as? String) ?? ""
+    static var basescanKeys: [String] {
+        ((Bundle.main.object(forInfoDictionaryKey: "BasescanApiKeys") as? String) ?? "").components(separatedBy: ",")
     }
 
-    static var polygonscanKey: String {
-        (Bundle.main.object(forInfoDictionaryKey: "PolygonscanApiKey") as? String) ?? ""
+    static var bscscanKeys: [String] {
+        ((Bundle.main.object(forInfoDictionaryKey: "BscscanApiKeys") as? String) ?? "").components(separatedBy: ",")
     }
 
-    static var snowtraceKey: String {
-        (Bundle.main.object(forInfoDictionaryKey: "SnowtraceApiKey") as? String) ?? ""
+    static var polygonscanKeys: [String] {
+        ((Bundle.main.object(forInfoDictionaryKey: "PolygonscanApiKeys") as? String) ?? "").components(separatedBy: ",")
+    }
+
+    static var snowtraceKeys: [String] {
+        ((Bundle.main.object(forInfoDictionaryKey: "SnowtraceApiKeys") as? String) ?? "").components(separatedBy: ",")
     }
 
     static var twitterBearerToken: String? {
@@ -129,12 +143,20 @@ enum AppConfig {
         (Bundle.main.object(forInfoDictionaryKey: "OneInchCommissionAddress") as? String).flatMap { $0.isEmpty ? nil : $0 }
     }
 
+    static var referralAppServerUrl: String {
+        (Bundle.main.object(forInfoDictionaryKey: "ReferralAppServerUrl") as? String) ?? ""
+    }
+
     static var defaultWords: String {
         Bundle.main.object(forInfoDictionaryKey: "DefaultWords") as? String ?? ""
     }
 
     static var defaultPassphrase: String {
         Bundle.main.object(forInfoDictionaryKey: "DefaultPassphrase") as? String ?? ""
+    }
+
+    static var defaultWatchAddress: String? {
+        Bundle.main.object(forInfoDictionaryKey: "DefaultWatchAddress") as? String
     }
 
     static var sharedCloudContainer: String? {
@@ -147,6 +169,14 @@ enum AppConfig {
 
     static var openSeaApiKey: String {
         (Bundle.main.object(forInfoDictionaryKey: "OpenSeaApiKey") as? String) ?? ""
+    }
+
+    static var chainalysisApiKey: String {
+        (Bundle.main.object(forInfoDictionaryKey: "ChainalysisApiKey") as? String) ?? ""
+    }
+
+    static var hashDitApiKey: String {
+        (Bundle.main.object(forInfoDictionaryKey: "HashDitApiKey") as? String) ?? ""
     }
 
     static var swapEnabled: Bool {
